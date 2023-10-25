@@ -23,7 +23,7 @@ void Player__UPDATE(Player* this, Map map, float dt) {
 	else if (this->lookright)
 		rotSpeed = this->lookspeed * dt;
 	else if (this->xrel != 0)
-		rotSpeed = (this->lookspeed * (this->xrel * 0.2f)) * dt;
+		rotSpeed = (this->lookspeed * (this->xrel * 0.02f)) * dt;
 
 	// Move camera
 	Vec2F oldDir = this->dir;

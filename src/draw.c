@@ -188,29 +188,29 @@ void drawObjects(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, O
 		this->rect.h = fabsf(display.h / (transformY));
 		this->rect.w = fabsf(display.h / (transformY));
 		//calculate lowest and highest pixel to fill in current stripe
-		int drawStartY = -64 / 2 + display.h / 2;
-		if(drawStartY < 0) drawStartY = 0;
-		int drawEndY = 64 / 2 + display.h / 2;
-		if(drawEndY >= display.h) drawEndY = display.h - 1;
+		// int drawStartY = -64 / 2 + display.h / 2;
+		// if(drawStartY < 0) drawStartY = 0;
+		// int drawEndY = 64 / 2 + display.h / 2;
+		// if(drawEndY >= display.h) drawEndY = display.h - 1;
 
 		//calculate width of the sprite
-		int drawStartX = -this->rect.w / 2.f + this->rect.x;
-		if(drawStartX < 0) drawStartX = 0;
-		int drawEndX = this->rect.w / 2.f + this->rect.x;
-		if(drawEndX >= display.w) drawEndX = display.w - 1;
+		// int drawStartX = -this->rect.w / 2.f + this->rect.x;
+		// if(drawStartX < 0) drawStartX = 0;
+		// int drawEndX = this->rect.w / 2.f + this->rect.x;
+		// if(drawEndX >= display.w) drawEndX = display.w - 1;
 
-		for (int i = drawStartX; i < drawEndX; i++) {
-			int texX = 256 * (i - (-this->rect.w / 2.f + this->rect.x)) * 64 / this->rect.w / 256;
-			for (int j = drawStartY; j < drawEndY; j++) {
-				int d = (y) * 256 - display.h * 128 + this->rect.h * 128;
-				int texY = ((d * 64) / this->rect.h) / 256;
-				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-				SDL_RenderDrawPoint(renderer, i, j);
-			}
-		}
-		// if (this->rect.x >= -this->rect.w && this->rect.x < display.w && this->rect.y >= -this->rect.h && this->rect.y < display.h) {
-		// 	Object__DRAW(this, renderer);
+		// for (int i = drawStartX; i < drawEndX; i++) {
+		// 	int texX = 256 * (i - (-this->rect.w / 2.f + this->rect.x)) * 64 / this->rect.w / 256;
+		// 	for (int j = drawStartY; j < drawEndY; j++) {
+		// 		int d = (y) * 256 - display.h * 128 + this->rect.h * 128;
+		// 		int texY = ((d * 64) / this->rect.h) / 256;
+		// 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+		// 		SDL_RenderDrawPoint(renderer, i, j);
+		// 	}
 		// }
+		if (this->rect.x >= -this->rect.w && this->rect.x < display.w && this->rect.y >= -this->rect.h && this->rect.y < display.h) {
+			Object__DRAW(this, renderer);
+		}
 	}
 }
 

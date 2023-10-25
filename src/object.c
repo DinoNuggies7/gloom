@@ -24,7 +24,7 @@ void Object__Test__INIT(Object* this, SDL_Renderer* renderer) {
 	printf("Based Nuggets\n");
 	this->type = "Test";
 	this->speed = 30;
-	this->texture = IMG_LoadTexture(renderer, "image.png");
+	this->texture = IMG_LoadTexture(renderer, "res/image.png");
 	this->vel.x = this->speed;
 	this->vel.y = this->speed;
 	this->rect.w = 200;
@@ -46,7 +46,9 @@ void Object__Derk__INIT(Object* this, SDL_Renderer* renderer) {
 	printf("<Gaylord has joined the game>\n");
 	this->type = "Derk";
 	this->speed = 0.0f;
-	this->texture = IMG_LoadTexture(renderer, "derkfull.png");
+	this->texture = IMG_LoadTexture(renderer, "res/derkfull.png");
+	if (this->texture == NULL)
+		printf("no image\n");
 }
 void Object__Derk__UPDATE(Object* this, ...) {
 	va_list list;

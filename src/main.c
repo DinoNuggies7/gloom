@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 	object[1].pos.y = 5;
 
 	Map map;
-	parseMap(&map, "test.txt");
+	parseMap(&map, "res/test.txt");
 
 	for (int j = 0; j < map.h; j++) {		// Print map data
 		for (int i = 0; i < map.w; i++) {

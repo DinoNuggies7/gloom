@@ -168,7 +168,7 @@ void drawWalls(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Obj
 				side = true;
 			}
 			int tile = getTile(map, mapBox.x, mapBox.y);
-			if (tile > 0 && tile < 6)
+			if (tile > TILE_COLLISION_START && tile < TILE_COLLISION_END)
 				hit = tile;
 			if (i > 16)
 				break;

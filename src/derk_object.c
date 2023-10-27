@@ -3,7 +3,7 @@
 // Derk Object
 void Object__Derk__INIT(Object* this, ...) {
 	printf("<Gaylord has joined the game>\n");
-	this->speed = 4.f;
+	this->speed = 0.f;
 	this->hitbox = 0.3f;
 	this->texture = IMG_Load("res/derk.png");
 }

@@ -30,15 +30,15 @@ int main(int argc, char **argv) {
 	ObjectFunction objFunc;
 	SetObjectFunctions(&objFunc);
 
-	int objects = 1;
+	int objects = 2;
 	Object object[objects];
 	object[0] = CreateObject(OBJECT_DERK, &objFunc);
-	// object[1] = CreateObject(OBJECT_NONE, &objFunc);
+	object[1] = CreateObject(OBJECT_NONE, &objFunc);
 
 	object[0].pos.x = 5;
 	object[0].pos.y = 6;
-	// object[1].pos.x = 6;
-	// object[1].pos.y = 6;
+	object[1].pos.x = 7;
+	object[1].pos.y = 6;
 
 	Map map;
 	parseMap(&map, "res/test.txt");
@@ -48,10 +48,10 @@ int main(int argc, char **argv) {
 			if (getTile(map, i, j) == TILE_SPAWN) {
 				printf("@ ");
 				player.pos.x = i;	// Setting player spawn point,
-				player.pos.y = j;	//  should move to player.c
+				player.pos.y = j;	//  should move to player.c (maybe)
 			}
-			else if (getTile(map, i, j) > 0)
-				printf("# ");
+			else if (getTile(map, i, j) > TILE_COLLISION_START && getTile(map, i, j) < TILE_COLLISION_END)
+				printf("%d ", getTile(map, i, j));
 			else
 				printf(". ");
 		}

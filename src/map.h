@@ -11,9 +11,9 @@ typedef struct {
 } Map;
 
 enum MapTile {
-	TILE_NONE = -1,
+	TILE_NONE,
 	TILE_SPAWN,
-	
+
 	TILE_COLLISION_START,
 	TILE_GLITCHED,
 	TILE_RED,

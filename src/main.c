@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
 	window = SDL_CreateWindow("doom'd", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display.w, display.h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRelativeMouseMode(true);
+	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 	float ticks = SDL_GetTicks();
 	float lastTicks;
@@ -33,10 +34,10 @@ int main(int argc, char **argv) {
 	int objects = 2;
 	Object object[objects];
 	object[0] = CreateObject(OBJECT_DERK, &objFunc);
-	object[1] = CreateObject(OBJECT_NONE, &objFunc);
+	object[1] = CreateObject(OBJECT_CHAIR, &objFunc);
 
-	object[0].pos.x = 5;
-	object[0].pos.y = 6;
+	object[0].pos.x = 4;
+	object[0].pos.y = 3.5;
 	object[1].pos.x = 7;
 	object[1].pos.y = 6;
 

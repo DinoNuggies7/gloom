@@ -16,8 +16,8 @@ typedef struct Object {
 } Object;
 enum ObjectType {
 	OBJECT_NONE,
-	OBJECT_TEST,
 	OBJECT_DERK,
+	OBJECT_CHAIR,
 
 	OBJECT_TYPES,
 };

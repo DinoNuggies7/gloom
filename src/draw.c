@@ -34,8 +34,8 @@ Uint32 getPixel(SDL_Surface* surface, int x, int y) {
 }
 
 void drawBackground(SDL_Renderer* renderer, SDL_DisplayMode display) {
-	SDL_Color ceilingColor = {40, 40, 40};
-	SDL_Color floorColor = {-2, -2, -2};
+	SDL_Color ceilingColor = {40, 40, 40, 255};
+	SDL_Color floorColor = {-2, -2, -2, 255};
 	SDL_SetRenderDrawColor(renderer, ceilingColor.r, ceilingColor.g, ceilingColor.b, ceilingColor.a);
 	for (int i = 0; i < display.h / 2; i++) {
 		SDL_RenderDrawLine(renderer, 0, i, display.w, i);
@@ -192,6 +192,7 @@ void drawWalls(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Obj
 
 		// choose wall color
 		SDL_Color color;
+		color.a = 255;
 		if (hit == TILE_GLITCHED) {
 			color.r = rand() % 256;
 			color.g = rand() % 256;

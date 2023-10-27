@@ -2,10 +2,10 @@
 #include "objects.h"
 
 void SetObjectFunctions(ObjectFunction* objFunc) {
-	objFunc->INIT_[OBJECT_TEST] = &Object__Test__INIT;
-	objFunc->UPDATE_[OBJECT_TEST] = &Object__Test__UPDATE;
 	objFunc->INIT_[OBJECT_DERK] = &Object__Derk__INIT;
 	objFunc->UPDATE_[OBJECT_DERK] = &Object__Derk__UPDATE;
+	objFunc->INIT_[OBJECT_CHAIR] = &Object__Chair__INIT;
+	objFunc->UPDATE_[OBJECT_CHAIR] = &Object__Chair__UPDATE;
 }
 
 // Function for Spawning Objects

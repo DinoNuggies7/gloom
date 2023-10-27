@@ -1,5 +1,5 @@
-#ifndef DERK_OBJECT
-#define DERK_OBJECT
+#ifndef DERK_OBJECT_H
+#define DERK_OBJECT_H
 
 #include "object.h"
 

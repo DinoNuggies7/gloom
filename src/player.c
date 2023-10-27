@@ -5,7 +5,7 @@ void Player__INIT(Player* this) {
 	this->speed = 5.f;
 	this->minSpeed = 5.f;
 	this->friction = 5.f;
-	this->hitbox = 0.25f;
+	this->hitbox = 0.5f;
 	this->forward = this->backword = this->left = this->right = false;
 	this->lookleft = this->lookright = false;
 	this->lookspeed = 1.5f;
@@ -90,9 +90,9 @@ void Player__UPDATE(Player* this, Map map, float dt) {
 	Vec2I tile;
 	tile.x = getTile(map, this->pos.x + ((this->vel.x < 0) ? this->vel.x * dt - this->hitbox : this->vel.x * dt + this->hitbox), this->pos.y);
 	tile.y = getTile(map, this->pos.x, this->pos.y + ((this->vel.y < 0) ? this->vel.y * dt - this->hitbox : this->vel.y * dt + this->hitbox));
-	if (tile.x > 0 && tile.x < 6)
+	if (tile.x > TILE_COLLISION_START && tile.x < TILE_COLLISION_END)
 		this->vel.x = 0;
-	if (tile.y > 0 && tile.y < 6)
+	if (tile.y > TILE_COLLISION_START && tile.y < TILE_COLLISION_END)
 		this->vel.y = 0;
 
 	// Applying Velocity

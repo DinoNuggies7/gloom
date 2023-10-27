@@ -1,24 +1,29 @@
-all:
-	clear
-	rm -rf build/
-	mkdir build/
-	ccache gcc -c src/main.c -o build/main.o
-	ccache gcc -c src/input.c -o build/input.o
-	ccache gcc -c src/draw.c -o build/draw.o
-	ccache gcc -c src/map.c -o build/map.o
-	ccache gcc -c src/object.c -o build/object.o
-	ccache gcc -c src/player.c -o build/player.o
-	ccache gcc build/*.o -lm -lSDL2 -lSDL2_image
+# Define the compiler and compilation flags
+CC = gcc
+CCACHE = ccache
+CFLAGS = -g
+LIBS = -lm -lSDL2 -lSDL2_image
+
+# Directories
+SRC_DIR = src
+BUILD_DIR = build
+
+# List of source files and corresponding object files
+SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
+OBJ_FILES = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC_FILES))
+
+# The default target is to build all object files
+all: $(OBJ_FILES)
+	$(CC) $(BUILD_DIR)/*.o $(LIBS)
 	./a.out
 
-windows:
-	clear
-	rm -rf build/
-	mkdir build/
-	ccache x86_64-w64-mingw32-gcc -c src/main.c -o build/main.o
-	ccache x86_64-w64-mingw32-gcc -c src/input.c -o build/input.o
-	ccache x86_64-w64-mingw32-gcc -c src/draw.c -o build/draw.o
-	ccache x86_64-w64-mingw32-gcc -c src/map.c -o build/map.o
-	ccache x86_64-w64-mingw32-gcc -c src/object.c -o build/object.o
-	ccache x86_64-w64-mingw32-gcc -c src/player.c -o build/player.o
-	ccache x86_64-w64-mingw32-gcc build/*.o -o GAME.EXE -static-libgcc -Wl,-Bstatic -lpthread -lcomctl32 -lpsapi -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -mwindows -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -Wl,-Bdynamic
+# Rule to compile a .c file to a .o file
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CCACHE) $(CC) $(CFLAGS) -c $< -o $@
+
+# Clean up the object files
+clean:
+	rm -f $(BUILD_DIR)/*.o
+
+# PHONY target to force the "clean" target to run even if a file named "clean" exists
+.PHONY: clean

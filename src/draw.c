@@ -1,5 +1,38 @@
 #include "draw.h"
 
+float dist2Player(Player player, Object object) {
+	return sqrt(powf(player.pos.x - object.pos.x, 2.f) + powf(player.pos.y - object.pos.y, 2.f));
+}
+
+float dist2Object(Player player, Object object) {
+	return sqrt(powf(object.pos.x - player.pos.x, 2.f) + powf(object.pos.y - player.pos.y, 2.f));
+}
+
+Uint32 getPixel(SDL_Surface* surface, int x, int y) {
+	int bpp = surface->format->BytesPerPixel;
+	/* Here p is the address to the pixel we want to retrieve */
+	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+	switch (bpp) {
+		case 1:
+			return *p;
+			break;
+		case 2:
+			return *(Uint16 *)p;
+			break;
+		case 3:
+			if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+				return p[0] << 16 | p[1] << 8 | p[2];
+			else
+				return p[0] | p[1] << 8 | p[2] << 16;
+				break;
+			case 4:
+				return *(Uint32 *)p;
+				break;
+			default:
+				return 0;       /* shouldn't happen, but avoids warnings */
+	}
+}
+
 void drawBackground(SDL_Renderer* renderer, SDL_DisplayMode display) {
 	SDL_Color ceilingColor = {40, 40, 40};
 	SDL_Color floorColor = {-2, -2, -2};
@@ -15,15 +48,7 @@ void drawBackground(SDL_Renderer* renderer, SDL_DisplayMode display) {
 	}
 }
 
-float dist2Player(Player player, Object object) {
-	return sqrt(powf(player.pos.x - object.pos.x, 2.f) + powf(player.pos.y - object.pos.y, 2.f));
-}
-
-float dist2Object(Player player, Object object) {
-	return sqrt(powf(object.pos.x - player.pos.x, 2.f) + powf(object.pos.y - player.pos.y, 2.f));
-}
-
-void drawWalls(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Object* object, Player player, Map map) {
+void drawWalls(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Object object[objects], Player player, Map map) {
 	for (int x = 0; x < display.w; x++) {
 		// calculate ray position and direction
 		float cameraX = 2 * x / (float)display.w - 1; // x-coordinate in camera space
@@ -104,27 +129,27 @@ void drawWalls(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Obj
 
 		// choose wall color
 		SDL_Color color;
-		if (hit == GLITCHED) {
+		if (hit == TILE_GLITCHED) {
 			color.r = rand() % 256;
 			color.g = rand() % 256;
 			color.b = rand() % 256;
 		}
-		else if (hit == RED) {
+		else if (hit == TILE_RED) {
 			color.r = 255;
 			color.g = 0;
 			color.b = 0;
 		}
-		else if (hit == GREEN) {
+		else if (hit == TILE_GREEN) {
 			color.r = 0;
 			color.g = 80;
 			color.b = 0;
 		}
-		else if (hit == BLUE) {
+		else if (hit == TILE_BLUE) {
 			color.r = 0;
 			color.g = 0;
 			color.b = 200;
 		}
-		else if (hit == PURPLE) {
+		else if (hit == TILE_PURPLE) {
 			color.r = 150;
 			color.g = 0;
 			color.b = 150;
@@ -146,8 +171,25 @@ void drawWalls(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Obj
 		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 		for (int i = drawStart; i < drawEnd; i++) {
 			bool draw = true;
-			if (perpWallDist > dist2Object(player, *object) && x >= (int)object->rect.x && x <= (int)object->rect.w && i >= (int)object->rect.y && i <= (int)object->rect.h)
-				draw = false;
+			for (int j = 0; j < objects; j++) {
+				int spriteX = object[j].rect.x - object[j].rect.w / 2;
+				int spriteW = object[j].rect.x + object[j].rect.w / 2;
+				int spriteY = object[j].rect.y;
+				int spriteH = object[j].rect.y + object[j].rect.h;
+				int texX = 256 * (x - (-object[j].rect.w / 2.f + object[j].rect.x)) * 64 / object[j].rect.w / 256;
+				int d = (i) * 256 - display.h * 128 + object[j].rect.h * 128;
+				int texY = ((d * 64) / object[j].rect.h) / 256;
+				if (x > spriteX && x < spriteW && i > spriteY && i < spriteH) {
+					if (perpWallDist + 0.2 > dist2Object(player, object[j])) {
+						SDL_Color objColor;
+						SDL_GetRGBA(getPixel(object[j].texture, texX, texY), object[j].texture->format, &objColor.r, &objColor.g, &objColor.b, &objColor.a);
+						if (objColor.a != 0) {
+							draw = false;
+							break;
+						}
+					}
+				}
+			}
 			if (draw)
 				SDL_RenderDrawPoint(renderer, x, i);
 		}
@@ -182,34 +224,37 @@ void drawObjects(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, O
 		float transformX = invDet * (player.dir.y * x - player.dir.x * y);
 		float transformY = invDet * (-player.plane.y * x + player.plane.x * y);
 
+		this->rect.w = fabsf(display.h / (transformY));
+		this->rect.h = fabsf(display.h / (transformY));
+
 		this->rect.x = (display.w / 2.f) * (1 + transformX / transformY);
 		this->rect.y = (display.h / 2.f - this->rect.h / 2.f);
 
-		this->rect.h = fabsf(display.h / (transformY));
-		this->rect.w = fabsf(display.h / (transformY));
 		//calculate lowest and highest pixel to fill in current stripe
-		// int drawStartY = -64 / 2 + display.h / 2;
-		// if(drawStartY < 0) drawStartY = 0;
-		// int drawEndY = 64 / 2 + display.h / 2;
-		// if(drawEndY >= display.h) drawEndY = display.h - 1;
+		int drawStartY = -this->rect.h / 2 + display.h / 2.f;
+		if(drawStartY < 0) drawStartY = 0;
+		int drawEndY = this->rect.h / 2 + display.h / 2.f;
+		if(drawEndY >= display.h) drawEndY = display.h - 1;
 
 		//calculate width of the sprite
-		// int drawStartX = -this->rect.w / 2.f + this->rect.x;
-		// if(drawStartX < 0) drawStartX = 0;
-		// int drawEndX = this->rect.w / 2.f + this->rect.x;
-		// if(drawEndX >= display.w) drawEndX = display.w - 1;
+		int drawStartX = -this->rect.w / 2.f + this->rect.x;
+		if(drawStartX < 0) drawStartX = 0;
+		int drawEndX = this->rect.w / 2.f + this->rect.x;
+		if(drawEndX >= display.w) drawEndX = display.w - 1;
 
-		// for (int i = drawStartX; i < drawEndX; i++) {
-		// 	int texX = 256 * (i - (-this->rect.w / 2.f + this->rect.x)) * 64 / this->rect.w / 256;
-		// 	for (int j = drawStartY; j < drawEndY; j++) {
-		// 		int d = (y) * 256 - display.h * 128 + this->rect.h * 128;
-		// 		int texY = ((d * 64) / this->rect.h) / 256;
-		// 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		// 		SDL_RenderDrawPoint(renderer, i, j);
-		// 	}
-		// }
-		if (this->rect.x >= -this->rect.w && this->rect.x < display.w && this->rect.y >= -this->rect.h && this->rect.y < display.h) {
-			Object__DRAW(this, renderer);
+		for (int i = drawStartX; i < drawEndX; i++) {
+			int texX = 256 * (i - (-this->rect.w / 2.f + this->rect.x)) * 64 / this->rect.w / 256;
+			if(transformY > 0 && i > 0 && i < display.w)
+			for (int j = drawStartY; j < drawEndY; j++) {
+				int d = (j) * 256 - display.h * 128 + this->rect.h * 128;
+				int texY = ((d * 64) / this->rect.h) / 256;
+				SDL_Color color;
+				Uint32 data = getPixel(this->texture, texX, texY);
+				SDL_GetRGBA(data, this->texture->format, &color.r, &color.g, &color.b, &color.a);
+				SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+				if (color.a != 0)
+					SDL_RenderDrawPoint(renderer, i, j);
+			}
 		}
 	}
 }

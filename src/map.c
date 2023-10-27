@@ -31,31 +31,31 @@ void parseMap(Map* map, const char* mapFile) {
 		ch = fgetc(file);
 		switch (ch) {
 		case '.':
-			map->tile[i] = NONE;
+			map->tile[i] = TILE_NONE;
 			i++;
 			break;
 		case '@':
-			map->tile[i] = SPAWN;
+			map->tile[i] = TILE_SPAWN;
 			i++;
 			break;
 		case '?':
-			map->tile[i] = GLITCHED;
+			map->tile[i] = TILE_GLITCHED;
 			i++;
 			break;
 		case 'R':
-			map->tile[i] = RED;
+			map->tile[i] = TILE_RED;
 			i++;
 			break;
 		case 'G':
-			map->tile[i] = GREEN;
+			map->tile[i] = TILE_GREEN;
 			i++;
 			break;
 		case 'B':
-			map->tile[i] = BLUE;
+			map->tile[i] = TILE_BLUE;
 			i++;
 			break;
 		case 'P':
-			map->tile[i] = PURPLE;
+			map->tile[i] = TILE_PURPLE;
 			i++;
 			break;
 		case '\n':

@@ -27,27 +27,25 @@ int main(int argc, char **argv) {
 	Player player;
 	Player__INIT(&player);
 
+	ObjectFunction objFunc;
+	SetObjectFunctions(&objFunc);
+
 	int objects = 1;
 	Object object[objects];
-	object[0] = CreateObject("Derk");
-	// object[1] = CreateObject("Derk");
+	object[0] = CreateObject(OBJECT_DERK, &objFunc);
+	// object[1] = CreateObject(OBJECT_NONE, &objFunc);
 
-	for (int i = 0; i < objects; i++) {
-		Object__INIT(&object[i]);
-		object[i].init(&object[i], renderer);
-	}
-
-	object[0].pos.x = 4;
-	object[0].pos.y = 5;
-	object[1].pos.x = 6;
-	object[1].pos.y = 5;
+	object[0].pos.x = 5;
+	object[0].pos.y = 6;
+	// object[1].pos.x = 6;
+	// object[1].pos.y = 6;
 
 	Map map;
 	parseMap(&map, "res/test.txt");
 
 	for (int j = 0; j < map.h; j++) {		// Print map data
 		for (int i = 0; i < map.w; i++) {
-			if (getTile(map, i, j) == SPAWN) {
+			if (getTile(map, i, j) == TILE_SPAWN) {
 				printf("@ ");
 				player.pos.x = i;	// Setting player spawn point,
 				player.pos.y = j;	//  should move to player.c
@@ -71,19 +69,17 @@ int main(int argc, char **argv) {
 		Player__UPDATE(&player, map, dt);
 
 		for (int i = 0; i < objects; i++) {
-			if (!strcmp(object[i].type, "Derk")) {
+			if (object[i].type > OBJECT_NONE && object[i].type < OBJECT_TYPES)
 				object[i].update(&object[i], dt, &player, map, display);
-			}
-			Object__UPDATE(&object[i], dt);
+			ObjectGlobalUPDATE(&object[i], dt);
 		}
-
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 		SDL_RenderClear(renderer);
 
 		drawBackground(renderer, display);
 		drawObjects(renderer, display, objects, object, player);
-		drawWalls(renderer, display, objects, &object[0], player, map);
+		drawWalls(renderer, display, objects, object, player, map);
 
 		SDL_RenderPresent(renderer);
 	}

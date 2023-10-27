@@ -6,23 +6,30 @@
 #include <SDL2/SDL_image.h>
 
 typedef struct Object {
-	void (*init)(struct Object*, SDL_Renderer*);
+	void (*init)(struct Object*, ...);
 	void (*update)(struct Object*, ...);
-	const char* type;
-	float speed;
+	int type;
+	float speed, hitbox;
 	Vec2F pos, vel, dir;
-	SDL_Texture* texture;
+	SDL_Surface* texture;
 	SDL_FRect rect;
 } Object;
-void Object__INIT(Object* object);
-void Object__UPDATE(Object* object, float dt);
-void Object__DRAW(Object* object, SDL_Renderer* renderer);
-Object CreateObject(const char* type);
+enum ObjectType {
+	OBJECT_NONE,
+	OBJECT_TEST,
+	OBJECT_DERK,
 
-void Object__Test__INIT(Object* object, SDL_Renderer* renderer);
-void Object__Test__UPDATE(Object* object, ...);
+	OBJECT_TYPES,
+};
+typedef struct ObjectFunction {
+	void (*INIT_[OBJECT_TYPES])(Object* object, ...);
+	void (*UPDATE_[OBJECT_TYPES])(Object* object, ...);
+} ObjectFunction;
 
-void Object__Derk__INIT(Object* object, SDL_Renderer* renderer);
-void Object__Derk__UPDATE(Object* object, ...);
+void SetObjectFunctions(ObjectFunction* objFunc);
+Object CreateObject(int type, ObjectFunction* objFunc);
+
+void ObjectGlobalINIT(Object* object);
+void ObjectGlobalUPDATE(Object* object, float dt);
 
 #endif

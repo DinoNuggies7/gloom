@@ -14,7 +14,7 @@ void Object__Derk__UPDATE(Object* this, ...) {
 	double dt = va_arg(list, double);
 	Player* player = va_arg(list, Player*);
 	Map map = va_arg(list, Map);
-	SDL_DisplayMode display = va_arg(list, SDL_DisplayMode);
+	SDL_Rect view = va_arg(list, SDL_Rect);
 
 	// dir vector is straight line towards the player
 	this->dir.x = player->pos.x - this->pos.x;

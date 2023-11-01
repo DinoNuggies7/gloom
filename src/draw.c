@@ -33,22 +33,22 @@ Uint32 getPixel(SDL_Surface* surface, int x, int y) {
 	}
 }
 
-void drawBackground(SDL_Renderer* renderer, SDL_DisplayMode display) {
+void drawBackground(SDL_Renderer* renderer, SDL_Rect view) {
 	SDL_Color ceilingColor = {40, 40, 40, 255};
 	SDL_Color floorColor = {-2, -2, -2, 255};
 	SDL_SetRenderDrawColor(renderer, ceilingColor.r, ceilingColor.g, ceilingColor.b, ceilingColor.a);
-	for (int i = 0; i < display.h / 2; i++) {
-		SDL_RenderDrawLine(renderer, 0, i, display.w, i);
-		SDL_SetRenderDrawColor(renderer, ceilingColor.r - (i % display.h / 10), ceilingColor.g - (i % display.h / 10), ceilingColor.b - (i % display.h / 10), ceilingColor.a);	
+	for (int i = 0; i < view.h / 2; i++) {
+		SDL_RenderDrawLine(renderer, 0, i, view.w, i);
+		SDL_SetRenderDrawColor(renderer, ceilingColor.r - (i % view.h / 10), ceilingColor.g - (i % view.h / 10), ceilingColor.b - (i % view.h / 10), ceilingColor.a);	
 	}
 	SDL_SetRenderDrawColor(renderer, floorColor.r, floorColor.g, floorColor.b, floorColor.a);
-	for (int i = 0; i < display.h / 2; i++) {
-		SDL_RenderDrawLine(renderer, 0, i + display.h / 2, display.w, i + display.h / 2);
-		SDL_SetRenderDrawColor(renderer, floorColor.r - (-i % display.h / 10), floorColor.g - (-i % display.h / 10), floorColor.b - (-i % display.h / 10), floorColor.a);	
+	for (int i = 0; i < view.h / 2; i++) {
+		SDL_RenderDrawLine(renderer, 0, i + view.h / 2, view.w, i + view.h / 2);
+		SDL_SetRenderDrawColor(renderer, floorColor.r - (-i % view.h / 10), floorColor.g - (-i % view.h / 10), floorColor.b - (-i % view.h / 10), floorColor.a);	
 	}
 }
 
-void drawObjects(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Object object[objects], Player player) {
+void drawObjects(SDL_Renderer* renderer, SDL_Rect view, int objects, Object object[objects], Player player) {
 	int drawOrder[objects];
 	for (int i = 0; i < objects; i++)
 		drawOrder[i] = i;
@@ -76,29 +76,29 @@ void drawObjects(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, O
 		float transformX = invDet * (player.dir.y * x - player.dir.x * y);
 		float transformY = invDet * (-player.plane.y * x + player.plane.x * y);
 
-		this->rect.w = fabsf(display.h / (transformY));
-		this->rect.h = fabsf(display.h / (transformY));
+		this->rect.w = fabsf(view.h / (transformY));
+		this->rect.h = fabsf(view.h / (transformY));
 
-		this->rect.x = (display.w / 2.f) * (1 + transformX / transformY);
-		this->rect.y = (display.h / 2.f - this->rect.h / 2.f);
+		this->rect.x = (view.w / 2.f) * (1 + transformX / transformY);
+		this->rect.y = (view.h / 2.f - this->rect.h / 2.f);
 
 		//calculate lowest and highest pixel to fill in current stripe
-		int drawStartY = -this->rect.h / 2 + display.h / 2.f;
+		int drawStartY = -this->rect.h / 2 + view.h / 2.f;
 		if(drawStartY < 0) drawStartY = 0;
-		int drawEndY = this->rect.h / 2 + display.h / 2.f;
-		if(drawEndY >= display.h) drawEndY = display.h - 1;
+		int drawEndY = this->rect.h / 2 + view.h / 2.f;
+		if(drawEndY >= view.h) drawEndY = view.h - 1;
 
 		//calculate width of the sprite
 		int drawStartX = -this->rect.w / 2.f + this->rect.x;
 		if(drawStartX < 0) drawStartX = 0;
 		int drawEndX = this->rect.w / 2.f + this->rect.x;
-		if(drawEndX >= display.w) drawEndX = display.w - 1;
+		if(drawEndX >= view.w) drawEndX = view.w - 1;
 
 		for (int i = drawStartX; i < drawEndX; i++) {
 			int texX = 256 * (i - (-this->rect.w / 2.f + this->rect.x)) * this->texture->w / this->rect.w / 256;
-			if(transformY > 0 && i > 0 && i < display.w) {
+			if(transformY > 0 && i > 0 && i < view.w) {
 				for (int j = drawStartY; j < drawEndY; j++) {
-					int d = (j) * 256 - display.h * 128 + this->rect.h * 128;
+					int d = (j) * 256 - view.h * 128 + this->rect.h * 128;
 					int texY = ((d * this->texture->h) / this->rect.h) / 256;
 					SDL_Color color;
 					SDL_GetRGBA(getPixel(this->texture, texX, texY), this->texture->format, &color.r, &color.g, &color.b, &color.a);
@@ -111,10 +111,10 @@ void drawObjects(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, O
 	}
 }
 
-void drawWalls(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Object object[objects], Player player, Map map) {
-	for (int x = 0; x < display.w; x++) {
+void drawWalls(SDL_Renderer* renderer, SDL_Rect view, int objects, Object object[objects], Player player, Map map) {
+	for (int x = 0; x < view.w; x++) {
 		// calculate ray position and direction
-		float cameraX = 2 * x / (float)display.w - 1; // x-coordinate in camera space
+		float cameraX = 2 * x / (float)view.w - 1; // x-coordinate in camera space
 		Vec2F rayDir = {
 			.x = player.dir.x + player.plane.x * cameraX,
 			.y = player.dir.y + player.plane.y * cameraX,
@@ -182,13 +182,13 @@ void drawWalls(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Obj
 			perpWallDist = (sideDist.x - deltaDist.x);
 
 		// Calculate height of line to draw on screen 
-		int lineHeight = (int)(display.h / perpWallDist);
+		int lineHeight = (int)(view.h / perpWallDist);
 
 		// calculate lowest and highest pixel to fill in current stripe
-		int drawStart = -lineHeight / 2 + display.h / 2;
+		int drawStart = -lineHeight / 2 + view.h / 2;
 		if (drawStart < 0) drawStart = 0;
-		int drawEnd = lineHeight / 2 + display.h / 2; 
-		if (drawEnd >= display.h) drawEnd = display.h;
+		int drawEnd = lineHeight / 2 + view.h / 2; 
+		if (drawEnd >= view.h) drawEnd = view.h;
 
 		// choose wall color
 		SDL_Color color;
@@ -243,7 +243,7 @@ void drawWalls(SDL_Renderer* renderer, SDL_DisplayMode display, int objects, Obj
 				float invDet = 1 / (player.plane.x * player.dir.y - player.dir.x * player.plane.y);
 				float transformY = invDet * (-player.plane.y * (object[j].pos.x - player.pos.x) + player.plane.x * (object[j].pos.y - player.pos.y));
 				int texX = 256 * (x - (-object[j].rect.w / 2.f + object[j].rect.x)) * object[j].texture->w / object[j].rect.w / 256;
-				int d = (i) * 256 - display.h * 128 + object[j].rect.h * 128;
+				int d = (i) * 256 - view.h * 128 + object[j].rect.h * 128;
 				int texY = ((d * object[j].texture->h) / object[j].rect.h) / 256;
 				if (transformY > 0 && x > spriteX && x < spriteW && i > spriteY && i < spriteH) {
 					if (perpWallDist > dist2Object(player, object[j])) {

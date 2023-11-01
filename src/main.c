@@ -21,6 +21,11 @@ int main(int argc, char **argv) {
 	SDL_SetRelativeMouseMode(true);
 	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
+	SDL_Rect view = {0, 0, 640, 360};
+	SDL_RenderSetScale(renderer, (float)display.w / view.w, (float)display.h / view.h);
+
+	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 0);
+
 	float ticks = SDL_GetTicks();
 	float lastTicks;
 	float dt;
@@ -71,16 +76,16 @@ int main(int argc, char **argv) {
 
 		for (int i = 0; i < objects; i++) {
 			if (object[i].type > OBJECT_NONE && object[i].type < OBJECT_TYPES)
-				object[i].update(&object[i], dt, &player, map, display);
+				object[i].update(&object[i], dt, &player, map, view);
 			ObjectGlobalUPDATE(&object[i], dt);
 		}
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 		SDL_RenderClear(renderer);
 
-		drawBackground(renderer, display);
-		drawObjects(renderer, display, objects, object, player);
-		drawWalls(renderer, display, objects, object, player, map);
+		drawBackground(renderer, view);
+		drawObjects(renderer, view, objects, object, player);
+		drawWalls(renderer, view, objects, object, player, map);
 
 		SDL_RenderPresent(renderer);
 	}

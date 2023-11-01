@@ -1,11 +1,7 @@
 #include "draw.h"
 
-float dist2Player(Player player, Object object) {
-	return sqrt(powf(player.pos.x - object.pos.x, 2.f) + powf(player.pos.y - object.pos.y, 2.f));
-}
-
 float dist2Object(Player player, Object object) {
-	return sqrt(powf(object.pos.x - player.pos.x, 2.f) + powf(object.pos.y - player.pos.y, 2.f));
+	return sqrt(powf(player.pos.x - object.pos.x, 2.f) + powf(player.pos.y - object.pos.y, 2.f));
 }
 
 Uint32 getPixel(SDL_Surface* surface, int x, int y) {
@@ -61,7 +57,7 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, int objects, Object o
 		for (int i = 0; i < objects - 1; i++) {
 			int a = drawOrder[i];
 			int b = drawOrder[i+1];
-			if (dist2Player(player, object[a]) < dist2Player(player, object[b])) {
+			if (dist2Object(player, object[a]) < dist2Object(player, object[b])) {
 				drawOrder[i] = b;
 				drawOrder[i+1] = a;
 				done = false;

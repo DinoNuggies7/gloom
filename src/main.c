@@ -18,13 +18,14 @@ int main(int argc, char **argv) {
 
 	window = SDL_CreateWindow("doom'd", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display.w, display.h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	SDL_SetRelativeMouseMode(true);
-	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 	SDL_Rect view = {0, 0, 640, 360};
 	SDL_RenderSetScale(renderer, (float)display.w / view.w, (float)display.h / view.h);
 
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 0);
+
+	SDL_SetRelativeMouseMode(true);
+	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 	float ticks = SDL_GetTicks();
 	float lastTicks;
@@ -84,8 +85,7 @@ int main(int argc, char **argv) {
 		SDL_RenderClear(renderer);
 
 		drawBackground(renderer, view);
-		drawObjects(renderer, view, objects, object, player);
-		drawWalls(renderer, view, objects, object, player, map);
+		drawForeground(renderer, view, objects, object, player, map);
 
 		SDL_RenderPresent(renderer);
 	}

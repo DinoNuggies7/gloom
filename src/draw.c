@@ -24,7 +24,7 @@ Uint32 getPixel(SDL_Surface* surface, int x, int y) {
 				return p[0] << 16 | p[1] << 8 | p[2];
 			else
 				return p[0] | p[1] << 8 | p[2] << 16;
-				break;
+			break;
 			case 4:
 				return *(Uint32 *)p;
 				break;
@@ -34,21 +34,24 @@ Uint32 getPixel(SDL_Surface* surface, int x, int y) {
 }
 
 void drawBackground(SDL_Renderer* renderer, SDL_Rect view) {
-	SDL_Color ceilingColor = {40, 40, 40, 255};
-	SDL_Color floorColor = {-2, -2, -2, 255};
-	SDL_SetRenderDrawColor(renderer, ceilingColor.r, ceilingColor.g, ceilingColor.b, ceilingColor.a);
+	// SDL_Color ceilingColor = {40, 40, 40, 255};
+	// SDL_SetRenderDrawColor(renderer, ceilingColor.r, ceilingColor.g, ceilingColor.b, ceilingColor.a);
+	// SDL_SetRenderDrawColor(renderer, floorColor.r, floorColor.g, floorColor.b, floorColor.a);
+	SDL_Color floorColor = {40, 40, 40, 255};
 	for (int i = 0; i < view.h / 2; i++) {
+		SDL_SetRenderDrawColor(renderer, floorColor.r - (i / 4.4), floorColor.g - (i / 4.4), floorColor.b - (i / 4.4), floorColor.a);	
 		SDL_RenderDrawLine(renderer, 0, i, view.w, i);
-		SDL_SetRenderDrawColor(renderer, ceilingColor.r - (i % view.h / 10), ceilingColor.g - (i % view.h / 10), ceilingColor.b - (i % view.h / 10), ceilingColor.a);	
+		SDL_SetRenderDrawColor(renderer, floorColor.r - (i / 4.4), floorColor.g - (i / 4.4), floorColor.b - (i / 4.4), floorColor.a);	
+		SDL_RenderDrawLine(renderer, 0, -i + view.h, view.w, -i + view.h);
 	}
-	SDL_SetRenderDrawColor(renderer, floorColor.r, floorColor.g, floorColor.b, floorColor.a);
-	for (int i = 0; i < view.h / 2; i++) {
-		SDL_RenderDrawLine(renderer, 0, i + view.h / 2, view.w, i + view.h / 2);
-		SDL_SetRenderDrawColor(renderer, floorColor.r - (-i % view.h / 10), floorColor.g - (-i % view.h / 10), floorColor.b - (-i % view.h / 10), floorColor.a);	
-	}
+	// SDL_SetRenderDrawColor(renderer, floorColor.r, floorColor.g, floorColor.b, floorColor.a);
+	// for (int i = 0; i < view.h / 2; i++) {
+	// 	// SDL_RenderDrawLine(renderer, 0, i, view.w, i);
+	// }
 }
 
-void drawObjects(SDL_Renderer* renderer, SDL_Rect view, int objects, Object object[objects], Player player) {
+void drawForeground(SDL_Renderer* renderer, SDL_Rect view, int objects, Object object[objects], Player player, Map map) {
+	// Draw Objects
 	int drawOrder[objects];
 	for (int i = 0; i < objects; i++)
 		drawOrder[i] = i;
@@ -109,9 +112,8 @@ void drawObjects(SDL_Renderer* renderer, SDL_Rect view, int objects, Object obje
 			}
 		}
 	}
-}
 
-void drawWalls(SDL_Renderer* renderer, SDL_Rect view, int objects, Object object[objects], Player player, Map map) {
+	// Draw Walls
 	for (int x = 0; x < view.w; x++) {
 		// calculate ray position and direction
 		float cameraX = 2 * x / (float)view.w - 1; // x-coordinate in camera space
@@ -170,7 +172,7 @@ void drawWalls(SDL_Renderer* renderer, SDL_Rect view, int objects, Object object
 			int tile = getTile(map, mapBox.x, mapBox.y);
 			if (tile > TILE_COLLISION_START && tile < TILE_COLLISION_END)
 				hit = tile;
-			if (i > 16)
+			if (i > 20)
 				break;
 		}
 

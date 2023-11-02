@@ -30,9 +30,6 @@ Uint32 getPixel(SDL_Surface* surface, int x, int y) {
 }
 
 void drawBackground(SDL_Renderer* renderer, SDL_Rect view) {
-	// SDL_Color ceilingColor = {40, 40, 40, 255};
-	// SDL_SetRenderDrawColor(renderer, ceilingColor.r, ceilingColor.g, ceilingColor.b, ceilingColor.a);
-	// SDL_SetRenderDrawColor(renderer, floorColor.r, floorColor.g, floorColor.b, floorColor.a);
 	SDL_Color floorColor = {40, 40, 40, 255};
 	for (int i = 0; i < view.h / 2; i++) {
 		SDL_SetRenderDrawColor(renderer, floorColor.r - (i / 4.4), floorColor.g - (i / 4.4), floorColor.b - (i / 4.4), floorColor.a);	
@@ -40,10 +37,6 @@ void drawBackground(SDL_Renderer* renderer, SDL_Rect view) {
 		SDL_SetRenderDrawColor(renderer, floorColor.r - (i / 4.4), floorColor.g - (i / 4.4), floorColor.b - (i / 4.4), floorColor.a);	
 		SDL_RenderDrawLine(renderer, 0, -i + view.h, view.w, -i + view.h);
 	}
-	// SDL_SetRenderDrawColor(renderer, floorColor.r, floorColor.g, floorColor.b, floorColor.a);
-	// for (int i = 0; i < view.h / 2; i++) {
-	// 	// SDL_RenderDrawLine(renderer, 0, i, view.w, i);
-	// }
 }
 
 void drawForeground(SDL_Renderer* renderer, SDL_Rect view, int objects, Object object[objects], Player player, Map map) {

@@ -5,16 +5,19 @@
 #include "map.h"
 
 #include <stdbool.h>
+#include <string.h>
 #include <math.h>
+#include <cjson/cJSON.h>
 
 typedef struct {
 	bool quit;
+	char* map;
 	bool forward, backword, left, right, dig, lookleft, lookright;
-	float speed, friction, maxSpeed, minSpeed, hitbox, xrel, lookspeed;
+	float speed, friction, maxSpeed, minSpeed, hitbox, xrel, lookspeed, sensitivity;
 	Vec2F pos, vel, dir, plane;
 } Player;
 
-void Player__INIT(Player* player);
+void Player__INIT(Player* player, const char* configPath);
 void Player__UPDATE(Player* player, Map map, float dt);
 
 #endif

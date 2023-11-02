@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 	float dt;
 
 	Player player;
-	Player__INIT(&player);
+	Player__INIT(&player, "config.json");
 
 	ObjectFunction objFunc;
 	SetObjectFunctions(&objFunc);
@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
 	object[1].pos.y = 6;
 
 	Map map;
-	parseMap(&map, "res/test.txt");
+	parseMap(&map, player.map);
 
 	for (int j = 0; j < map.h; j++) {		// Print map data
 		for (int i = 0; i < map.w; i++) {

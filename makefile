@@ -2,7 +2,7 @@
 CC = gcc
 CCACHE = ccache
 CFLAGS = -g
-LIBS = -lm -lSDL2 -lSDL2_image
+LIBS = -lm -lSDL2 -lSDL2_image -lcjson
 
 # Directories
 SRC_DIR = src

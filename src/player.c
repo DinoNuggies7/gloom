@@ -1,6 +1,6 @@
 #include "player.h"
 
-void Player__INIT(Player* this) {
+void Player__INIT(Player* this, const char* configPath) {
 	this->maxSpeed = 5.f;
 	this->speed = 5.f;
 	this->minSpeed = 5.f;
@@ -13,6 +13,27 @@ void Player__INIT(Player* this) {
 	this->dir.y = 0.0f;
 	this->plane.x = 0.0f;
 	this->plane.y = 1.0f;
+
+	FILE* file = fopen(configPath, "r");
+	if (file == NULL)
+		printf("couldn't find config file\n");
+	else {
+		char buffer[1024];
+		int len = fread(buffer, 1, sizeof(buffer), file);
+		cJSON* json = cJSON_Parse(buffer);
+
+		cJSON* map = cJSON_GetObjectItemCaseSensitive(json, "map");
+		if (cJSON_IsString(map)) {
+			this->map = (char*)malloc(strlen(map->valuestring));
+			strcpy(this->map, map->valuestring);
+		}
+
+		cJSON* sensitivity = cJSON_GetObjectItemCaseSensitive(json, "sensitivity");
+		if (cJSON_IsNumber(sensitivity))
+			this->sensitivity = sensitivity->valuedouble;
+
+		cJSON_Delete(json);
+	}
 }
 
 void Player__UPDATE(Player* this, Map map, float dt) {
@@ -23,7 +44,7 @@ void Player__UPDATE(Player* this, Map map, float dt) {
 	else if (this->lookright)
 		rotSpeed = this->lookspeed * dt;
 	else if (this->xrel != 0)
-		rotSpeed = (this->lookspeed * (this->xrel * 0.02f)) * dt;
+		rotSpeed = (this->lookspeed * (this->xrel * this->sensitivity)) * dt;
 
 	// Move camera
 	Vec2F oldDir = this->dir;

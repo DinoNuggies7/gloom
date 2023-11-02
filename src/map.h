@@ -25,5 +25,6 @@ enum MapTile {
 
 void parseMap(Map* map, const char* mapFile);
 int getTile(Map map, int x, int y);
+void setTile(Map* map, int x, int y, int tile);
 
 #endif

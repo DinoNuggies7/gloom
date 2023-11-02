@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 		ticks = SDL_GetTicks();
 		dt = (ticks - lastTicks) / 1000.f;
 
-		Player__UPDATE(&player, map, dt);
+		Player__UPDATE(&player, &map, dt);
 
 		for (int i = 0; i < objects; i++) {
 			if (object[i].type > OBJECT_NONE && object[i].type < OBJECT_TYPES)

@@ -67,3 +67,7 @@ void parseMap(Map* map, const char* mapFile) {
 int getTile(Map map, int x, int y) {
 	return map.tile[x+(y*map.w)];
 }
+
+void setTile(Map* map, int x, int y, int tile) {
+	map->tile[x+(y*map->w)] = tile;
+}

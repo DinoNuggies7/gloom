@@ -6,6 +6,7 @@ void Player__INIT(Player* this, const char* configPath) {
 	this->minSpeed = 5.f;
 	this->friction = 5.f;
 	this->hitbox = 0.5f;
+	this->equip = TILE_PURPLE;
 	this->forward = this->backword = this->left = this->right = false;
 	this->lookleft = this->lookright = false;
 	this->lookspeed = 1.5f;
@@ -49,7 +50,7 @@ void Player__INIT(Player* this, const char* configPath) {
 	}
 }
 
-void Player__UPDATE(Player* this, Map map, float dt) {
+void Player__UPDATE(Player* this, Map* map, float dt) {
 	// Choose method of moving camera
 	float rotSpeed = 0.0f;
 	if (this->lookleft)
@@ -122,8 +123,8 @@ void Player__UPDATE(Player* this, Map map, float dt) {
 
 	// Collision
 	Vec2I tile;
-	tile.x = getTile(map, this->pos.x + ((this->vel.x < 0) ? this->vel.x * dt - this->hitbox : this->vel.x * dt + this->hitbox), this->pos.y);
-	tile.y = getTile(map, this->pos.x, this->pos.y + ((this->vel.y < 0) ? this->vel.y * dt - this->hitbox : this->vel.y * dt + this->hitbox));
+	tile.x = getTile(*map, this->pos.x + ((this->vel.x < 0) ? this->vel.x * dt - this->hitbox : this->vel.x * dt + this->hitbox), this->pos.y);
+	tile.y = getTile(*map, this->pos.x, this->pos.y + ((this->vel.y < 0) ? this->vel.y * dt - this->hitbox : this->vel.y * dt + this->hitbox));
 	if (tile.x > TILE_COLLISION_START && tile.x < TILE_COLLISION_END)
 		this->vel.x = 0;
 	if (tile.y > TILE_COLLISION_START && tile.y < TILE_COLLISION_END)
@@ -132,4 +133,20 @@ void Player__UPDATE(Player* this, Map map, float dt) {
 	// Applying Velocity
 	this->pos.x += this->vel.x * dt;
 	this->pos.y += this->vel.y * dt;
+
+	// Remove map tiles
+	if (this->dig) {
+		int x = this->pos.x + this->dir.x;
+		int y = this->pos.y + this->dir.y;
+		int tile = getTile(*map, x, y);
+		if (tile > TILE_COLLISION_START && tile < TILE_COLLISION_END)
+			setTile(map, x, y, TILE_NONE);
+	}
+	if (this->build) {
+		int x = this->pos.x + this->dir.x;
+		int y = this->pos.y + this->dir.y;
+		int tile = getTile(*map, round(x), round(y));
+		if (tile == TILE_NONE)
+			setTile(map, x, y, this->equip);
+	}
 }

@@ -15,8 +15,20 @@ void Player__INIT(Player* this, const char* configPath) {
 	this->plane.y = 1.0f;
 
 	FILE* file = fopen(configPath, "r");
-	if (file == NULL)
-		printf("couldn't find config file\n");
+	if (file == NULL) {
+		printf("couldn't find config file, creating one\n");
+		cJSON* json = cJSON_CreateObject();
+		this->map = "res/test.txt"; // Default values
+		this->sensitivity = 1;
+		cJSON_AddStringToObject(json, "map", this->map);
+		cJSON_AddNumberToObject(json, "sensitivity", this->sensitivity);
+		char* json_str = cJSON_Print(json);
+		FILE* newfile = fopen(configPath, "w");
+		fputs(json_str, newfile);
+		fclose(newfile);
+		cJSON_free(json_str);
+		cJSON_Delete(json);
+	}
 	else {
 		char buffer[1024];
 		int len = fread(buffer, 1, sizeof(buffer), file);
@@ -32,6 +44,7 @@ void Player__INIT(Player* this, const char* configPath) {
 		if (cJSON_IsNumber(sensitivity))
 			this->sensitivity = sensitivity->valuedouble;
 
+		fclose(file);
 		cJSON_Delete(json);
 	}
 }

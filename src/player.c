@@ -6,7 +6,6 @@ void Player__INIT(Player* this, const char* configPath) {
 	this->minSpeed = 5.f;
 	this->friction = 5.f;
 	this->hitbox = 0.5f;
-	this->equip = TILE_PURPLE;
 	this->forward = this->backword = this->left = this->right = false;
 	this->lookup = this->lookdown = this->lookleft = this->lookright = false;
 	this->dig = this->build = false;
@@ -22,8 +21,10 @@ void Player__INIT(Player* this, const char* configPath) {
 		cJSON* json = cJSON_CreateObject();
 		this->map = "res/test.txt"; // Default values
 		this->sensitivity = 1;
+		this->equip = TILE_BRICK;
 		cJSON_AddStringToObject(json, "map", this->map);
 		cJSON_AddNumberToObject(json, "sensitivity", this->sensitivity);
+		cJSON_AddNumberToObject(json, "equip", this->equip);
 		char* json_str = cJSON_Print(json);
 		FILE* newfile = fopen(configPath, "w");
 		fputs(json_str, newfile);
@@ -45,6 +46,10 @@ void Player__INIT(Player* this, const char* configPath) {
 		cJSON* sensitivity = cJSON_GetObjectItemCaseSensitive(json, "sensitivity");
 		if (cJSON_IsNumber(sensitivity))
 			this->sensitivity = sensitivity->valuedouble;
+
+		cJSON* equip = cJSON_GetObjectItemCaseSensitive(json, "equip");
+		if (cJSON_IsNumber(equip))
+			this->equip = equip->valueint;
 
 		fclose(file);
 		cJSON_Delete(json);

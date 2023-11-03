@@ -8,7 +8,8 @@ void Player__INIT(Player* this, const char* configPath) {
 	this->hitbox = 0.5f;
 	this->equip = TILE_PURPLE;
 	this->forward = this->backword = this->left = this->right = false;
-	this->lookleft = this->lookright = false;
+	this->lookup = this->lookdown = this->lookleft = this->lookright = false;
+	this->dig = this->build = false;
 	this->lookspeed = 1.5f;
 	this->dir.x = 1.0f;
 	this->dir.y = 0.0f;

@@ -50,12 +50,12 @@ void parseMap(Map* map, const char* mapFile) {
 			map->tile[i] = TILE_GREEN;
 			i++;
 			break;
-		case 'B':
-			map->tile[i] = TILE_BLUE;
-			i++;
-			break;
 		case 'P':
 			map->tile[i] = TILE_PURPLE;
+			i++;
+			break;
+		case 'B':
+			map->tile[i] = TILE_BRICK;
 			i++;
 			break;
 		case '\n':

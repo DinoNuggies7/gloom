@@ -27,6 +27,9 @@ int main(int argc, char **argv) {
 	SDL_SetRelativeMouseMode(true);
 	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
+	SDL_Surface* texture[1];
+	texture[0] = IMG_Load("res/brick.png");
+
 	float ticks = SDL_GetTicks();
 	float lastTicks;
 	float dt;
@@ -85,7 +88,7 @@ int main(int argc, char **argv) {
 		SDL_RenderClear(renderer);
 
 		drawBackground(renderer, view);
-		drawForeground(renderer, view, objects, object, player, map);
+		drawForeground(renderer, view, texture, objects, object, player, map);
 
 		SDL_RenderPresent(renderer);
 	}

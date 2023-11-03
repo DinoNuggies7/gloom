@@ -39,7 +39,7 @@ void drawBackground(SDL_Renderer* renderer, SDL_Rect view) {
 	}
 }
 
-void drawForeground(SDL_Renderer* renderer, SDL_Rect view, int objects, Object object[objects], Player player, Map map) {
+void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[1], int objects, Object object[objects], Player player, Map map) {
 	// Draw Objects
 	int drawOrder[objects];
 	for (int i = 0; i < objects; i++)
@@ -177,44 +177,45 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, int objects, Object o
 
 		// calculate lowest and highest pixel to fill in current stripe
 		int drawStart = -lineHeight / 2 + view.h / 2;
-		if (drawStart < 0) drawStart = 0;
 		int drawEnd = lineHeight / 2 + view.h / 2; 
+		int texH = drawEnd - drawStart;
+		if (drawStart < 0) drawStart = 0;
 		if (drawEnd >= view.h) drawEnd = view.h;
 
 		// choose wall color
+		SDL_Surface* tex = NULL;
 		SDL_Color color;
 		color.a = 255;
-		if (hit == TILE_GLITCHED) {
+		switch (hit) {
+		case TILE_GLITCHED:
 			color.r = rand() % 256;
 			color.g = rand() % 256;
 			color.b = rand() % 256;
-		}
-		else if (hit == TILE_RED) {
+			break;
+		case TILE_RED:
 			color.r = 255;
 			color.g = 0;
 			color.b = 0;
-		}
-		else if (hit == TILE_GREEN) {
+			break;
+		case TILE_GREEN:
 			color.r = 0;
 			color.g = 80;
 			color.b = 0;
-		}
-		else if (hit == TILE_BLUE) {
-			color.r = 0;
-			color.g = 0;
-			color.b = 200;
-		}
-		else if (hit == TILE_PURPLE) {
+			break;
+		case TILE_PURPLE:
 			color.r = 150;
 			color.g = 0;
 			color.b = 150;
-		}
-		else {
+			break;
+		case TILE_BRICK:
+			tex = texture[0];
+			break;
+		default:
 			color.r = 0;
 			color.g = 0;
 			color.b = 0;
+			break;
 		}
-
 		// give x and y sides different brightness
 		if (!side && hit) {
 			color.r /= 2; 
@@ -224,6 +225,7 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, int objects, Object o
 
 		// Draw
 		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+		float invDet = 1 / (player.plane.x * player.dir.y - player.dir.x * player.plane.y);
 		for (int i = drawStart; i < drawEnd; i++) {
 			bool draw = true;
 			for (int j = 0; j < objects; j++) {
@@ -231,7 +233,6 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, int objects, Object o
 				int spriteW = object[j].rect.x + object[j].rect.w / 2;
 				int spriteY = object[j].rect.y;
 				int spriteH = object[j].rect.y + object[j].rect.h;
-				float invDet = 1 / (player.plane.x * player.dir.y - player.dir.x * player.plane.y);
 				float transformY = invDet * (-player.plane.y * (object[j].pos.x - player.pos.x) + player.plane.x * (object[j].pos.y - player.pos.y));
 				int texX = 256 * (x - (-object[j].rect.w / 2.f + object[j].rect.x)) * object[j].texture->w / object[j].rect.w / 256;
 				int d = (i) * 256 - view.h * 128 + object[j].rect.h * 128;
@@ -247,8 +248,32 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, int objects, Object o
 					}
 				}
 			}
-			if (draw)
+			if (draw) {
+				if (tex != NULL) {
+					//calculate value of wallX
+					float wallX; //where exactly the wall was hit
+					if (side == 0) wallX = player.pos.y + perpWallDist * rayDir.y;
+					else           wallX = player.pos.x + perpWallDist * rayDir.x;
+					wallX -= floor((wallX));
+
+					//x coordinate on the texture
+					int texX = wallX * tex->w;
+					if(side == 0 && rayDir.x > 0) texX = tex->w - texX - 1;
+					if(side == 1 && rayDir.y < 0) texX = tex->w - texX - 1;
+					int d = (i) * 256 - view.h * 128 + texH * 128;
+					int texY = ((d * tex->h) / texH) / 256;
+
+					SDL_GetRGB(getPixel(tex, texX, texY), tex->format, &color.r, &color.g, &color.b);
+					// give x and y sides different brightness
+					if (!side && hit) {
+						color.r /= 2; 
+						color.g /= 2; 
+						color.b /= 2; 
+					}
+				}
+				SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 				SDL_RenderDrawPoint(renderer, x, i);
+			}
 		}
 	}
 }

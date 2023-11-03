@@ -52,22 +52,30 @@ void Player__INIT(Player* this, const char* configPath) {
 
 void Player__UPDATE(Player* this, Map* map, float dt) {
 	// Choose method of moving camera
-	float rotSpeed = 0.0f;
+	Vec2F rotSpeed;
+	rotSpeed.x = 0.0f;
+	rotSpeed.y = 0.0f;
+
 	if (this->lookleft)
-		rotSpeed = -this->lookspeed * dt;
+		rotSpeed.x = -this->lookspeed * dt;
 	else if (this->lookright)
-		rotSpeed = this->lookspeed * dt;
+		rotSpeed.x = this->lookspeed * dt;
 	else if (this->xrel != 0)
-		rotSpeed = (this->lookspeed * (this->xrel * this->sensitivity)) * dt;
+		rotSpeed.x = (this->lookspeed * (this->xrel * this->sensitivity)) * dt;
+
+	if (this->lookup)
+		rotSpeed.y = -this->lookspeed * dt;
+	else if (this->lookdown)		
+		rotSpeed.y = this->lookspeed * dt;
 
 	// Move camera
 	Vec2F oldDir = this->dir;
-	this->dir.x = this->dir.x * cosf(rotSpeed) - this->dir.y * sinf(rotSpeed);
-	this->dir.y = oldDir.x    * sinf(rotSpeed) + this->dir.y * cosf(rotSpeed);
+	this->dir.x = this->dir.x * cosf(rotSpeed.x) - this->dir.y * sinf(rotSpeed.x);
+	this->dir.y = oldDir.x    * sinf(rotSpeed.x) + this->dir.y * cosf(rotSpeed.x);
 
 	Vec2F oldPlane = this->plane;
-	this->plane.x = this->plane.x * cosf(rotSpeed) - this->plane.y * sinf(rotSpeed);
-	this->plane.y = oldPlane.x    * sinf(rotSpeed) + this->plane.y * cosf(rotSpeed);
+	this->plane.x = (this->plane.x * cosf(rotSpeed.x) - this->plane.y * sinf(rotSpeed.x));// + (this->plane.x * cosf(rotSpeed.y) - this->plane.y * sinf(rotSpeed.y));
+	this->plane.y = (oldPlane.x    * sinf(rotSpeed.x) + this->plane.y * cosf(rotSpeed.x));// + (oldPlane.y    * sinf(rotSpeed.y) + this->plane.y * cosf(rotSpeed.y));
 	this->xrel = 0;
 
 	// Normalizing dir

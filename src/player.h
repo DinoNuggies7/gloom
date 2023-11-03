@@ -12,7 +12,7 @@
 typedef struct {
 	bool quit;
 	char* map;
-	bool forward, backword, left, right, lookleft, lookright, dig, build;
+	bool forward, backword, left, right, lookup, lookdown, lookleft, lookright, dig, build;
 	float speed, friction, maxSpeed, minSpeed, hitbox, xrel, lookspeed, sensitivity;
 	int equip;
 	Vec2F pos, vel, dir, plane;

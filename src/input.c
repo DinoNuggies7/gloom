@@ -4,29 +4,48 @@ void handleInput(SDL_Event* event, Player* player) {
 	while (SDL_PollEvent(event)) {
 		if (event->type == SDL_WINDOWEVENT_CLOSE)
 			player->quit = true;
+
 		if (event->type == SDL_MOUSEMOTION)
 			player->xrel = event->motion.xrel;
+
+		if (event->type == SDL_MOUSEWHEEL)
+			player->scroll = event->wheel.y;
+
+		// Press
+		// if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && !player->leftclick)
+		// 	player->leftclickp = true;
+		// else player->leftclickp = false;
+		// if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_RIGHT && !player->rightclick)
+		// 	player->rightclickp = true;
+		// else player->rightclickp = false;
+
 		if (event->type == SDL_MOUSEBUTTONDOWN) {
 			switch (event->button.button) {
 				case SDL_BUTTON_LEFT:
-					player->dig = true;
+					player->leftclick = true;
 					break;
 				case SDL_BUTTON_RIGHT:
-					player->build = true;
+					player->rightclick = true;
 					break;
 			}
 		}
 		if (event->type == SDL_MOUSEBUTTONUP) {
 			switch (event->button.button) {
 				case SDL_BUTTON_LEFT:
-					player->dig = false;
+					player->leftclick = false;
 					break;
 				case SDL_BUTTON_RIGHT:
-					player->build = false;
+					player->rightclick = false;
 					break;
 			}
 		}
+
 		if (event->type == SDL_KEYDOWN) {
+			if (event->key.keysym.scancode >= 30 && event->key.keysym.scancode < 30 + SLOTS) {
+				player->select = event->key.keysym.scancode - 30;
+				player->choosing = true;
+				player->selectTimer = 2;
+			}
 			switch (event->key.keysym.scancode) {
 				case SDL_SCANCODE_ESCAPE:
 					player->quit = true;

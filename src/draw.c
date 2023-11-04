@@ -187,34 +187,34 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[
 		SDL_Color color;
 		color.a = 255;
 		switch (hit) {
-		case TILE_GLITCHED:
-			color.r = rand() % 256;
-			color.g = rand() % 256;
-			color.b = rand() % 256;
-			break;
-		case TILE_RED:
-			color.r = 255;
-			color.g = 0;
-			color.b = 0;
-			break;
-		case TILE_GREEN:
-			color.r = 0;
-			color.g = 80;
-			color.b = 0;
-			break;
-		case TILE_PURPLE:
-			color.r = 150;
-			color.g = 0;
-			color.b = 150;
-			break;
-		case TILE_BRICK:
-			tex = texture[0];
-			break;
-		default:
-			color.r = 0;
-			color.g = 0;
-			color.b = 0;
-			break;
+			case TILE_GLITCHED:
+				color.r = rand() % 256;
+				color.g = rand() % 256;
+				color.b = rand() % 256;
+				break;
+			case TILE_RED:
+				color.r = 255;
+				color.g = 0;
+				color.b = 0;
+				break;
+			case TILE_GREEN:
+				color.r = 0;
+				color.g = 80;
+				color.b = 0;
+				break;
+			case TILE_PURPLE:
+				color.r = 150;
+				color.g = 0;
+				color.b = 150;
+				break;
+			case TILE_BRICK:
+				tex = texture[1];
+				break;
+			default:
+				color.r = 0;
+				color.g = 0;
+				color.b = 0;
+				break;
 		}
 		// give x and y sides different brightness
 		if (!side && hit) {
@@ -278,6 +278,30 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[
 	}
 }
 
-void drawHUD(SDL_Renderer* renderer, Player* player) {
+void drawHUD(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* surface[2], Player player) {
+	SDL_Texture* hudTexture = SDL_CreateTextureFromSurface(renderer, surface[0]);
+	SDL_Rect hudRect = {0, view.h + 1, view.w, 24};
+	SDL_RenderCopy(renderer, hudTexture, NULL, &hudRect);
 
+	// Equiped Items
+	SDL_Rect handRect[2] = {
+		{15, view.h + 5, 16, 16},
+		{34, view.h + 5, 16, 16}
+	};
+	for (int i = 0; i < 2; i++) {
+		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, player.inventory[player.equip[i]].texture);
+		SDL_RenderCopy(renderer, itemTexture, NULL, &handRect[i]);
+	}
+
+	// Inventory Items
+	for (int i = 0; i < SLOTS; i++) {
+		SDL_Rect rect = {265 + i * 19, view.h + 5, 16, 16};
+		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, player.inventory[i].texture);
+		SDL_RenderCopy(renderer, itemTexture, NULL, &rect);
+	}
+	if (player.choosing) {
+		SDL_Rect rect = {263 + player.select * 19, view.h + 3, player.selectTexture->w, player.selectTexture->h};
+		SDL_Texture* selectTexture = SDL_CreateTextureFromSurface(renderer, player.selectTexture);
+		SDL_RenderCopy(renderer, selectTexture, NULL, &rect);
+	}
 }

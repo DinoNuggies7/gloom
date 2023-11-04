@@ -8,7 +8,8 @@
 typedef struct Object {
 	void (*init)(struct Object*, ...);
 	void (*update)(struct Object*, ...);
-	int type;
+	bool destroy;
+	int type, health;
 	float speed, hitbox;
 	Vec2F pos, vel, dir;
 	SDL_Surface* texture;
@@ -16,6 +17,7 @@ typedef struct Object {
 } Object;
 enum ObjectType {
 	OBJECT_NONE,
+	OBJECT_PROJECTILE,
 	OBJECT_DERK,
 	OBJECT_CHAIR,
 

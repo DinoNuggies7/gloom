@@ -24,6 +24,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 # Clean up the object files
 clean:
 	rm -f $(BUILD_DIR)/*.o
+	mkdir -p $(BUILD_DIR)
 
 # PHONY target to force the "clean" target to run even if a file named "clean" exists
 .PHONY: clean

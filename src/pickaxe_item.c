@@ -3,6 +3,7 @@
 
 void Item__Pickaxe__INIT(Item* this, ...) {
 	this->texture = IMG_Load("res/pickaxe.png");
+	this->itemTexture = IMG_Load("res/pickaxe_item.png");
 }
 
 void Item__Pickaxe__USE(Item* this, ...) {

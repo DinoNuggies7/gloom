@@ -58,45 +58,47 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[
 		}
 	}
 	for (int t = 0; t < objects; t++) {
-		Object* this = &object[drawOrder[t]];
+		Object* obj = &object[drawOrder[t]];
+		if (obj->type != OBJECT_NONE) {
 
-		float x = this->pos.x - player.pos.x;
-		float y = this->pos.y - player.pos.y;
+			float x = obj->pos.x - player.pos.x;
+			float y = obj->pos.y - player.pos.y;
 
-		float invDet = 1 / (player.plane.x * player.dir.y - player.dir.x * player.plane.y);
+			float invDet = 1 / (player.plane.x * player.dir.y - player.dir.x * player.plane.y);
 
-		float transformX = invDet * (player.dir.y * x - player.dir.x * y);
-		float transformY = invDet * (-player.plane.y * x + player.plane.x * y);
+			float transformX = invDet * (player.dir.y * x - player.dir.x * y);
+			float transformY = invDet * (-player.plane.y * x + player.plane.x * y);
 
-		this->rect.w = fabsf(view.h / (transformY));
-		this->rect.h = fabsf(view.h / (transformY));
+			obj->rect.w = fabsf(view.h / (transformY));
+			obj->rect.h = fabsf(view.h / (transformY));
 
-		this->rect.x = (view.w / 2.f) * (1 + transformX / transformY);
-		this->rect.y = (view.h / 2.f - this->rect.h / 2.f);
+			obj->rect.x = (view.w / 2.f) * (1 + transformX / transformY);
+			obj->rect.y = (view.h / 2.f - obj->rect.h / 2.f);
 
-		//calculate lowest and highest pixel to fill in current stripe
-		int drawStartY = -this->rect.h / 2 + view.h / 2.f;
-		if(drawStartY < 0) drawStartY = 0;
-		int drawEndY = this->rect.h / 2 + view.h / 2.f;
-		if(drawEndY >= view.h) drawEndY = view.h - 1;
+			//calculate lowest and highest pixel to fill in current stripe
+			int drawStartY = -obj->rect.h / 2 + view.h / 2.f;
+			if(drawStartY < 0) drawStartY = 0;
+			int drawEndY = obj->rect.h / 2 + view.h / 2.f;
+			if(drawEndY >= view.h) drawEndY = view.h - 1;
 
-		//calculate width of the sprite
-		int drawStartX = -this->rect.w / 2.f + this->rect.x;
-		if(drawStartX < 0) drawStartX = 0;
-		int drawEndX = this->rect.w / 2.f + this->rect.x;
-		if(drawEndX >= view.w) drawEndX = view.w - 1;
+			//calculate width of the sprite
+			int drawStartX = -obj->rect.w / 2.f + obj->rect.x;
+			if(drawStartX < 0) drawStartX = 0;
+			int drawEndX = obj->rect.w / 2.f + obj->rect.x;
+			if(drawEndX >= view.w) drawEndX = view.w - 1;
 
-		for (int i = drawStartX; i < drawEndX; i++) {
-			int texX = 256 * (i - (-this->rect.w / 2.f + this->rect.x)) * this->texture->w / this->rect.w / 256;
-			if(transformY > 0 && i > 0 && i < view.w) {
-				for (int j = drawStartY; j < drawEndY; j++) {
-					int d = (j) * 256 - view.h * 128 + this->rect.h * 128;
-					int texY = ((d * this->texture->h) / this->rect.h) / 256;
-					SDL_Color color;
-					SDL_GetRGBA(getPixel(this->texture, texX, texY), this->texture->format, &color.r, &color.g, &color.b, &color.a);
-					SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-					if (color.a != 0)
-						SDL_RenderDrawPoint(renderer, i, j);
+			for (int i = drawStartX; i < drawEndX; i++) {
+				int texX = 256 * (i - (-obj->rect.w / 2.f + obj->rect.x)) * obj->texture->w / obj->rect.w / 256;
+				if(transformY > 0 && i > 0 && i < view.w) {
+					for (int j = drawStartY; j < drawEndY; j++) {
+						int d = (j) * 256 - view.h * 128 + obj->rect.h * 128;
+						int texY = ((d * obj->texture->h) / obj->rect.h) / 256;
+						SDL_Color color;
+						SDL_GetRGBA(getPixel(obj->texture, texX, texY), obj->texture->format, &color.r, &color.g, &color.b, &color.a);
+						SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+						if (color.a != 0)
+							SDL_RenderDrawPoint(renderer, i, j);
+					}
 				}
 			}
 		}
@@ -161,7 +163,7 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[
 			int tile = getTile(map, mapBox.x, mapBox.y);
 			if (tile > TILE_COLLISION_START && tile < TILE_COLLISION_END)
 				hit = tile;
-			if (i > 20)
+			if (i > 200)
 				break;
 		}
 
@@ -210,6 +212,12 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[
 			case TILE_BRICK:
 				tex = texture[1];
 				break;
+			case TILE_STONE:
+				tex = texture[2];
+				break;
+			case TILE_DARK:
+				tex = texture[3];
+				break;
 			default:
 				color.r = 0;
 				color.g = 0;
@@ -229,21 +237,23 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[
 		for (int i = drawStart; i < drawEnd; i++) {
 			bool draw = true;
 			for (int j = 0; j < objects; j++) {
-				int spriteX = object[j].rect.x - object[j].rect.w / 2;
-				int spriteW = object[j].rect.x + object[j].rect.w / 2;
-				int spriteY = object[j].rect.y;
-				int spriteH = object[j].rect.y + object[j].rect.h;
-				float transformY = invDet * (-player.plane.y * (object[j].pos.x - player.pos.x) + player.plane.x * (object[j].pos.y - player.pos.y));
-				int texX = 256 * (x - (-object[j].rect.w / 2.f + object[j].rect.x)) * object[j].texture->w / object[j].rect.w / 256;
-				int d = (i) * 256 - view.h * 128 + object[j].rect.h * 128;
-				int texY = ((d * object[j].texture->h) / object[j].rect.h) / 256;
-				if (transformY > 0 && x > spriteX && x < spriteW && i > spriteY && i < spriteH) {
-					if (perpWallDist > dist2Object(player, object[j])) {
-						SDL_Color objColor;
-						SDL_GetRGBA(getPixel(object[j].texture, texX, texY), object[j].texture->format, &objColor.r, &objColor.g, &objColor.b, &objColor.a);
-						if (objColor.a != 0) {
-							draw = false;
-							break;
+				if (object[j].type != OBJECT_NONE) {
+					int spriteX = object[j].rect.x - object[j].rect.w / 2;
+					int spriteW = object[j].rect.x + object[j].rect.w / 2;
+					int spriteY = object[j].rect.y;
+					int spriteH = object[j].rect.y + object[j].rect.h;
+					float transformY = invDet * (-player.plane.y * (object[j].pos.x - player.pos.x) + player.plane.x * (object[j].pos.y - player.pos.y));
+					int texX = 256 * (x - (-object[j].rect.w / 2.f + object[j].rect.x)) * object[j].texture->w / object[j].rect.w / 256;
+					int d = (i) * 256 - view.h * 128 + object[j].rect.h * 128;
+					int texY = ((d * object[j].texture->h) / object[j].rect.h) / 256;
+					if (transformY > 0 && x > spriteX && x < spriteW && i > spriteY && i < spriteH) {
+						if (perpWallDist > dist2Object(player, object[j])) {
+							SDL_Color objColor;
+							SDL_GetRGBA(getPixel(object[j].texture, texX, texY), object[j].texture->format, &objColor.r, &objColor.g, &objColor.b, &objColor.a);
+							if (objColor.a != 0) {
+								draw = false;
+								break;
+							}
 						}
 					}
 				}
@@ -279,28 +289,75 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[
 }
 
 void drawHUD(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* surface[2], Player player) {
+	// Equipped Items
+	SDL_Surface* fireSurface = IMG_Load("res/gunshot.png");
+	Item* wieldedItem[2] = {&player.inventory[player.equip[LEFT]], &player.inventory[player.equip[RIGHT]]};
+	Vec2I wieldTex[2] = {
+		{wieldedItem[LEFT]->texture->w * WIELD_SCALE, wieldedItem[LEFT]->texture->h * WIELD_SCALE},
+		{wieldedItem[RIGHT]->texture->w * WIELD_SCALE, wieldedItem[RIGHT]->texture->h * WIELD_SCALE}
+	};
+	Vec2I fireTex = {fireSurface->w * WIELD_SCALE, fireSurface->h * WIELD_SCALE};
+	SDL_Rect handRect[2] = {
+		{
+			view.w / 4 - wieldTex[LEFT].x,
+			view.h - wieldTex[LEFT].y - 1,
+			wieldTex[LEFT].x,
+			wieldTex[LEFT].y
+		},
+		{
+			view.w / 1.33333f,
+			view.h - wieldTex[RIGHT].y - 1,
+			wieldTex[RIGHT].x,
+			wieldTex[RIGHT].y
+		}
+	};
+	SDL_Rect fireRect[2] = {
+		{
+			view.w / 4,
+			view.h / 1.75,
+			fireTex.x,
+			fireTex.y
+		},
+		{
+			view.w / 1.45,
+			view.h / 1.75,
+			fireTex.x,
+			fireTex.y
+		}
+	};
+	for (int i = 0; i < 2; i++) {
+		float rot;
+		SDL_Point rotPoint;
+		rotPoint.y = wieldedItem[i]->texture->h * WIELD_SCALE;
+		if (i == 0) {
+			rot = wieldedItem[i]->rot * -1;
+			rotPoint.x = 0;
+		}
+		else {
+			rot = wieldedItem[i]->rot;
+			rotPoint.x = wieldedItem[i]->texture->w * WIELD_SCALE;
+		}
+		if (wieldedItem[i]->fireTimer > wieldedItem[i]->fireRate / 1.1) {
+			SDL_Texture* fireTexture = IMG_LoadTexture(renderer, "res/gunshot.png");
+			SDL_RenderCopy(renderer, fireTexture, NULL, &fireRect[i]);
+		}
+		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, wieldedItem[i]->texture);
+		SDL_RenderCopyEx(renderer, itemTexture, NULL, &handRect[i], rot, &rotPoint, i == 0 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+	}
+
+	// Hotbar
 	SDL_Texture* hudTexture = SDL_CreateTextureFromSurface(renderer, surface[0]);
 	SDL_Rect hudRect = {0, view.h + 1, view.w, 24};
 	SDL_RenderCopy(renderer, hudTexture, NULL, &hudRect);
 
-	// Equiped Items
-	SDL_Rect handRect[2] = {
-		{15, view.h + 5, 16, 16},
-		{34, view.h + 5, 16, 16}
-	};
-	for (int i = 0; i < 2; i++) {
-		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, player.inventory[player.equip[i]].texture);
-		SDL_RenderCopy(renderer, itemTexture, NULL, &handRect[i]);
-	}
-
 	// Inventory Items
 	for (int i = 0; i < SLOTS; i++) {
-		SDL_Rect rect = {265 + i * 19, view.h + 5, 16, 16};
-		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, player.inventory[i].texture);
+		SDL_Rect rect = {264 + i * 19, view.h + 5, 16, 16};
+		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, player.inventory[i].itemTexture);
 		SDL_RenderCopy(renderer, itemTexture, NULL, &rect);
 	}
-	if (player.choosing) {
-		SDL_Rect rect = {263 + player.select * 19, view.h + 3, player.selectTexture->w, player.selectTexture->h};
+	if (player.choosing) { // Selection Icon
+		SDL_Rect rect = {262 + player.select * 19, view.h + 3, player.selectTexture->w, player.selectTexture->h};
 		SDL_Texture* selectTexture = SDL_CreateTextureFromSurface(renderer, player.selectTexture);
 		SDL_RenderCopy(renderer, selectTexture, NULL, &rect);
 	}

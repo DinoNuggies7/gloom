@@ -11,8 +11,6 @@
 #include <cjson/cJSON.h>
 
 #define CONFIG_PATH "config.json"
-#define TILE 0
-#define GUN  1
 #define LEFT  0
 #define RIGHT 1
 #define SLOTS 6

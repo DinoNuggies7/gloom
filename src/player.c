@@ -93,8 +93,8 @@ void Player__INIT(Player* this, ItemFunction* itemFunc) {
 		this->inventory[0] = CreateItem(ITEM_PICKAXE, itemFunc);
 		this->inventory[1] = CreateItem(ITEM_NAGANT, itemFunc);
 		this->inventory[2] = CreateItem(ITEM_BRICK, itemFunc);
-		this->inventory[3] = CreateItem(ITEM_RED, itemFunc);
-		this->inventory[4] = CreateItem(ITEM_GREEN, itemFunc);
+		this->inventory[3] = CreateItem(ITEM_STONE, itemFunc);
+		this->inventory[4] = CreateItem(ITEM_DARK, itemFunc);
 		this->inventory[5] = CreateItem(ITEM_PURPLE, itemFunc);
 
 		save(this);
@@ -223,7 +223,7 @@ void collision(Player* this, Map map, float dt) {
 void handleItems(Player* this, Map* map, float dt) {
 	// Globally Update Items
 	for (int i = 0; i < SLOTS; i++) {
-		if (this->inventory[i].type == ITEM_NAGANT)
+		if (this->inventory[i].isGun)
 			ItemGlobalUPDATE(&this->inventory[i], dt);
 	}
 
@@ -232,16 +232,30 @@ void handleItems(Player* this, Map* map, float dt) {
 		if (!this->choosing)
 			this->inventory[this->equip[LEFT]].use(&this->inventory[this->equip[LEFT]], this, map);
 		else {
-			this->equip[LEFT] = this->select;
-			this->selectTimer = 0.001;
+			if (this->select != this->equip[RIGHT]) {
+				this->equip[LEFT] = this->select;
+				this->selectTimer = 0.001;
+			}
+			else {
+				int tmp = this->equip[LEFT];
+				this->equip[LEFT] = this->equip[RIGHT];
+				this->equip[RIGHT] = tmp;
+			}
 		}
 	}
 	if (this->rightclick) {
 		if (!this->choosing)
 			this->inventory[this->equip[RIGHT]].use(&this->inventory[this->equip[RIGHT]], this, map);
 		else {
-			this->equip[RIGHT] = this->select;
-			this->selectTimer = 0.001;
+			if (this->select != this->equip[LEFT]) {
+				this->equip[RIGHT] = this->select;
+				this->selectTimer = 0.001;
+			}
+			else {
+				int tmp = this->equip[RIGHT];
+				this->equip[RIGHT] = this->equip[LEFT];
+				this->equip[LEFT] = tmp;
+			}
 		}
 	}
 

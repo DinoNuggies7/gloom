@@ -1,16 +1,21 @@
 #ifndef ITEM_H
 #define ITEM_H
 
+#include <stdbool.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
 
 typedef struct Item {
 	void (*init)(struct Item*, ...);
 	void (*update)(struct Item*, ...);
 	void (*use)(struct Item*, ...);
+	bool isGun, isFiring;
 	int type, tile, ammo, rounds, damage;
-	float range, fireTimer, reloadTimer, fireRate, reloadRate;
+	float rot, drot, range, fireTimer, reloadTimer, fireRate, reloadRate;
 	SDL_Surface* texture;
+	SDL_Surface* itemTexture;
+	SDL_Rect srcrect;
+	SDL_FRect dstrect;
+	SDL_FPoint rotPoint;
 } Item;
 enum ItemType {
 	ITEM_NONE,
@@ -20,6 +25,8 @@ enum ItemType {
 	ITEM_GREEN,
 	ITEM_PURPLE,
 	ITEM_BRICK,
+	ITEM_STONE,
+	ITEM_DARK,
 
 	ITEM_TYPES,
 };

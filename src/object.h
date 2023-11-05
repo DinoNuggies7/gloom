@@ -9,7 +9,7 @@ typedef struct Object {
 	void (*init)(struct Object*, ...);
 	void (*update)(struct Object*, ...);
 	bool destroy;
-	int type, health;
+	int type, hp, maxHealth;
 	float speed, hitbox;
 	Vec2F pos, vel, dir;
 	SDL_Surface* texture;
@@ -32,6 +32,6 @@ void SetObjectFunctions(ObjectFunction* objFunc);
 Object CreateObject(int type, ObjectFunction* objFunc);
 
 void ObjectGlobalINIT(Object* object);
-void ObjectGlobalUPDATE(Object* object, float dt);
+void ObjectGlobalUPDATE(Object* object, Player player, Map map, float dt);
 
 #endif

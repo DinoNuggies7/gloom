@@ -15,7 +15,9 @@ void SetItemFunctions(ItemFunction* itemFunc) {
 	itemFunc->INIT_[ITEM_GREEN] = &Item__Green__INIT;
 	itemFunc->INIT_[ITEM_PURPLE] = &Item__Purple__INIT;
 	itemFunc->INIT_[ITEM_BRICK] = &Item__Brick__INIT;
-	for (int i = ITEM_RED; i <= ITEM_BRICK; i++)
+	itemFunc->INIT_[ITEM_STONE] = &Item__Stone__INIT;
+	itemFunc->INIT_[ITEM_DARK] = &Item__Dark__INIT;
+	for (int i = ITEM_RED; i < ITEM_TYPES; i++)
 		itemFunc->USE_[i] = &Item__Block__USE;
 }
 
@@ -36,11 +38,14 @@ Item CreateItem(int type, ItemFunction* itemFunc) {
 void ItemGlobalINIT(Item* this) {
 	printf("Created Item\n");
 	this->type = ITEM_NONE;
+	this->isGun = this->isFiring = false;
+	this->rot = this->drot = 0;
 	this->range = this->tile = 0;
 	this->ammo = this->rounds = 0;
 	this->fireTimer = this->reloadTimer = 0;
 	this->fireRate = this->reloadRate = 0;
-	this->texture = IMG_Load("res/null.png");
+	this->rotPoint.x = this->rotPoint.y = 0;
+	this->texture = this->itemTexture = IMG_Load("res/null.png");
 }
 
 // Global Item Update
@@ -52,15 +57,21 @@ void ItemGlobalUPDATE(Item* this, float dt) {
 	else this->reloadTimer = 0;
 
 	if (this->ammo <= 0 && this->reloadTimer <= 0) {
-		printf("reloading: %d\n", this->type);
 		this->reloadTimer = this->reloadRate;
 		this->ammo = this->rounds;
 	}
+
+	if (this->fireTimer > 0 || this->reloadTimer > 0 || this->ammo <= 0)
+		this->isFiring = false;
+
+	this->rot = this->fireTimer * 100 + this->drot;
 }
 
 // Global Item Use
 void ItemGlobalUSE(Item* this) {
-	printf("fired: %d\n", this->type);
-	this->fireTimer = this->fireRate;
-	this->ammo--;
+	if (this->fireTimer <= 0 && this->reloadTimer <= 0 && this->ammo > 0) {
+		this->isFiring = true;
+		this->fireTimer = this->fireRate;
+		this->ammo--;
+	}
 }

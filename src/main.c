@@ -9,7 +9,7 @@
 SDL_Window* window;
 SDL_Renderer* renderer;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_PNG);
 
@@ -27,9 +27,11 @@ int main(int argc, char **argv) {
 	SDL_SetRelativeMouseMode(true);
 	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-	SDL_Surface* texture[2];
+	SDL_Surface* texture[4];
 	texture[0] = IMG_Load("res/hudbar.png");
 	texture[1] = IMG_Load("res/brick.png");
+	texture[2] = IMG_Load("res/stone.png");
+	texture[3] = IMG_Load("res/darkbrickbig.png");
 
 	float ticks = SDL_GetTicks();
 	float lastTicks;
@@ -84,15 +86,13 @@ int main(int argc, char **argv) {
 
 		for (int i = 0; i < objects; i++) {
 			// Update Objects
-			if (object[i].type > OBJECT_NONE && object[i].type < OBJECT_TYPES)
-				object[i].update(&object[i], dt, &player, map, view);
-			ObjectGlobalUPDATE(&object[i], dt);
-
-			// Remove Objects
-			if (object[i].destroy) {
-				object[i].type = OBJECT_NONE;
-				ObjectGlobalINIT(&object[i]);
+			if (!object[i].destroy) {
+				if (object[i].type > OBJECT_NONE && object[i].type < OBJECT_TYPES)
+					object[i].update(&object[i], dt, &player, map, view);
+				ObjectGlobalUPDATE(&object[i], player, map, dt);
 			}
+			else // Remove Objects
+				ObjectGlobalINIT(&object[i]);			
 		}
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);

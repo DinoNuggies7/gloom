@@ -7,6 +7,8 @@ void Item__Red__INIT(Item* item, ...);
 void Item__Green__INIT(Item* item, ...);
 void Item__Purple__INIT(Item* item, ...);
 void Item__Brick__INIT(Item* item, ...);
+void Item__Stone__INIT(Item* item, ...);
+void Item__Dark__INIT(Item* item, ...);
 
 void Item__Block__USE(Item* item, ...);
 

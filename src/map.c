@@ -58,6 +58,14 @@ void parseMap(Map* map, const char* mapFile) {
 			map->tile[i] = TILE_BRICK;
 			i++;
 			break;
+		case 'S':
+			map->tile[i] = TILE_STONE;
+			i++;
+			break;
+		case 'D':
+			map->tile[i] = TILE_DARK;
+			i++;
+			break;
 		case '\n':
 			break;
 		}

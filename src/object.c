@@ -35,7 +35,41 @@ void ObjectGlobalINIT(Object* this) {
 }
 
 // Global Object Update
-void ObjectGlobalUPDATE(Object* this, float dt) {
+void ObjectGlobalUPDATE(Object* this, Player player, Map map, float dt) {
 	this->pos.x += this->vel.x * dt;
 	this->pos.y += this->vel.y * dt;
+
+	// take damage when shot
+	for (int i = 0; i < SLOTS; i++) {
+		if (player.inventory[i].isGun) {
+			if (player.inventory[i].isFiring) {
+				for (float j = 1; true; j += 0.001) {
+					Vec2F dir = player.dir;
+					float magnitude = player.dir.x * player.dir.x + player.dir.y * player.dir.y;
+					dir.x /= magnitude;
+					dir.y /= magnitude;
+
+					float x = player.pos.x + player.dir.x * j;
+					float y = player.pos.y + player.dir.y * j;
+					int tile = getTile(map, x, y);
+
+					if (tile > TILE_COLLISION_START && tile < TILE_COLLISION_END) {
+						break;
+					}
+
+					if (x > this->pos.x - this->hitbox
+					 && x < this->pos.x + this->hitbox
+					 && y > this->pos.y - this->hitbox
+					 && y < this->pos.y + this->hitbox) {
+						this->hp -= player.inventory[i].damage;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	// If no hp then die
+	if (this->hp <= 0 && this->type != OBJECT_NONE)
+		this->destroy = true;
 }

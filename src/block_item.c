@@ -3,22 +3,32 @@
 
 void Item__Red__INIT(Item* this, ...) {
 	this->tile = TILE_RED;
-	this->texture = IMG_Load("res/block_red.png");
+	this->texture = this->itemTexture = IMG_Load("res/block_red.png");
 }
 
 void Item__Green__INIT(Item* this, ...) {
 	this->tile = TILE_GREEN;
-	this->texture = IMG_Load("res/block_green.png");
+	this->texture = this->itemTexture = IMG_Load("res/block_green.png");
 }
 
 void Item__Purple__INIT(Item* this, ...) {
 	this->tile = TILE_PURPLE;
-	this->texture = IMG_Load("res/block_purple.png");
+	this->texture = this->itemTexture = IMG_Load("res/block_purple.png");
 }
 
 void Item__Brick__INIT(Item* this, ...) {
 	this->tile = TILE_BRICK;
-	this->texture = IMG_Load("res/block_brick.png");
+	this->texture = this->itemTexture = IMG_Load("res/block_brick.png");
+}
+
+void Item__Stone__INIT(Item* this, ...) {
+	this->tile = TILE_STONE;
+	this->texture = this->itemTexture = IMG_Load("res/block_stone.png");
+}
+
+void Item__Dark__INIT(Item* this, ...) {
+	this->tile = TILE_DARK;
+	this->texture = this->itemTexture = IMG_Load("res/darkbrick.png");
 }
 
 void Item__Block__USE(Item* this, ...) {

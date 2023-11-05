@@ -1,6 +1,8 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#define WIELD_SCALE 3
+
 typedef struct {
 	int x, y;
 } Vec2I;

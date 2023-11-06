@@ -16,6 +16,7 @@ typedef struct Item {
 	SDL_Rect srcrect;
 	SDL_FRect dstrect;
 	SDL_FPoint rotPoint;
+	SDL_FPoint firePoint;
 } Item;
 enum ItemType {
 	ITEM_NONE,

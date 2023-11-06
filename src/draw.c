@@ -313,14 +313,14 @@ void drawHUD(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* surface[2], Pla
 	};
 	SDL_Rect fireRect[2] = {
 		{
-			view.w / 4,
-			view.h / 1.75,
+			view.w * (1 - wieldedItem[LEFT]->firePoint.x) - fireTex.x / 2.f,
+			view.h * wieldedItem[LEFT]->firePoint.y - fireTex.y / 2.f,
 			fireTex.x,
 			fireTex.y
 		},
 		{
-			view.w / 1.45,
-			view.h / 1.75,
+			view.w * wieldedItem[RIGHT]->firePoint.x - fireTex.x / 2.f,
+			view.h * wieldedItem[RIGHT]->firePoint.y - fireTex.y / 2.f,
 			fireTex.x,
 			fireTex.y
 		}
@@ -337,7 +337,7 @@ void drawHUD(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* surface[2], Pla
 			rot = wieldedItem[i]->rot;
 			rotPoint.x = wieldedItem[i]->texture->w * WIELD_SCALE;
 		}
-		if (wieldedItem[i]->fireTimer > wieldedItem[i]->fireRate / 1.1) {
+		if (wieldedItem[i]->fireTimer > wieldedItem[i]->fireRate * 0.95f) {
 			SDL_Texture* fireTexture = IMG_LoadTexture(renderer, "res/gunshot.png");
 			SDL_RenderCopy(renderer, fireTexture, NULL, &fireRect[i]);
 		}

@@ -10,6 +10,7 @@ void Item__Nagant__INIT(Item* this, ...) {
 	this->reloadRate = 2;
 	this->drot = -15;
 	this->rotPoint.x = 1, this->rotPoint.y = 1;
+	this->firePoint.x = 0.7, this->firePoint.y = 0.68;
 	this->texture = IMG_Load("res/nagant.png");
 	this->itemTexture = IMG_Load("res/nagant_item.png");
 }

@@ -45,6 +45,7 @@ void ItemGlobalINIT(Item* this) {
 	this->fireTimer = this->reloadTimer = 0;
 	this->fireRate = this->reloadRate = 0;
 	this->rotPoint.x = this->rotPoint.y = 0;
+	this->firePoint.x = this->firePoint.y = 0;
 	this->texture = this->itemTexture = IMG_Load("res/null.png");
 }
 

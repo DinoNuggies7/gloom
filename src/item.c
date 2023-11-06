@@ -39,14 +39,15 @@ void ItemGlobalINIT(Item* this) {
 	printf("Created Item\n");
 	this->type = ITEM_NONE;
 	this->isGun = this->isFiring = false;
-	this->rot = this->drot = 0;
 	this->range = this->tile = 0;
 	this->ammo = this->rounds = 0;
 	this->fireTimer = this->reloadTimer = 0;
 	this->fireRate = this->reloadRate = 0;
-	this->rotPoint.x = this->rotPoint.y = 0;
-	this->firePoint.x = this->firePoint.y = 0;
+	this->frame = this->frames = 0; this->srcrect = NULL;
+	this->frameRect.x = 0; this->frameRect.y = 0;
+	this->frameRect.w = 0; this->frameRect.h = 0;
 	this->texture = this->itemTexture = IMG_Load("res/null.png");
+	this->offset.x = this->offset.y = 0;
 }
 
 // Global Item Update
@@ -65,7 +66,10 @@ void ItemGlobalUPDATE(Item* this, float dt) {
 	if (this->fireTimer > 0 || this->reloadTimer > 0 || this->ammo <= 0)
 		this->isFiring = false;
 
-	this->rot = this->fireTimer * 100 + this->drot;
+	if (this->fireTimer > 0)
+		this->frame += 20 * dt;
+	else
+		this->frame = 0;
 }
 
 // Global Item Use

@@ -27,11 +27,10 @@ int main(int argc, char** argv) {
 	SDL_SetRelativeMouseMode(true);
 	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-	SDL_Surface* texture[4];
-	texture[0] = IMG_Load("res/hudbar.png");
-	texture[1] = IMG_Load("res/brick.png");
-	texture[2] = IMG_Load("res/stone.png");
-	texture[3] = IMG_Load("res/darkbrickbig.png");
+	SDL_Surface* texture[3];
+	texture[0] = IMG_Load("res/brick.png");
+	texture[1] = IMG_Load("res/stone.png");
+	texture[2] = IMG_Load("res/darkbrickbig.png");
 
 	float ticks = SDL_GetTicks();
 	float lastTicks;
@@ -100,7 +99,7 @@ int main(int argc, char** argv) {
 
 		drawBackground(renderer, view);
 		drawForeground(renderer, view, texture, objects, object, player, map);
-		drawHUD(renderer, view, texture, player);
+		drawHUD(renderer, view, player);
 
 		SDL_RenderPresent(renderer);
 	}

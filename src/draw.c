@@ -39,7 +39,7 @@ void drawBackground(SDL_Renderer* renderer, SDL_Rect view) {
 	}
 }
 
-void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[1], int objects, Object object[objects], Player player, Map map) {
+void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture, int objects, Object object[objects], Player player, Map map) {
 	// Draw Objects
 	int drawOrder[objects];
 	for (int i = 0; i < objects; i++)
@@ -210,13 +210,13 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[
 				color.b = 150;
 				break;
 			case TILE_BRICK:
-				tex = texture[1];
+				tex = texture[0];
 				break;
 			case TILE_STONE:
-				tex = texture[2];
+				tex = texture[1];
 				break;
 			case TILE_DARK:
-				tex = texture[3];
+				tex = texture[2];
 				break;
 			default:
 				color.r = 0;
@@ -288,65 +288,34 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* texture[
 	}
 }
 
-void drawHUD(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface* surface[2], Player player) {
+void drawHUD(SDL_Renderer* renderer, SDL_Rect view, Player player) {
 	// Equipped Items
-	SDL_Surface* fireSurface = IMG_Load("res/gunshot.png");
 	Item* wieldedItem[2] = {&player.inventory[player.equip[LEFT]], &player.inventory[player.equip[RIGHT]]};
 	Vec2I wieldTex[2] = {
-		{wieldedItem[LEFT]->texture->w * WIELD_SCALE, wieldedItem[LEFT]->texture->h * WIELD_SCALE},
-		{wieldedItem[RIGHT]->texture->w * WIELD_SCALE, wieldedItem[RIGHT]->texture->h * WIELD_SCALE}
+		{wieldedItem[LEFT]->frameRect.w * WIELD_SCALE, wieldedItem[LEFT]->frameRect.h * WIELD_SCALE},
+		{wieldedItem[RIGHT]->frameRect.w * WIELD_SCALE, wieldedItem[RIGHT]->frameRect.h * WIELD_SCALE}
 	};
-	Vec2I fireTex = {fireSurface->w * WIELD_SCALE, fireSurface->h * WIELD_SCALE};
 	SDL_Rect handRect[2] = {
 		{
-			view.w / 4 - wieldTex[LEFT].x,
-			view.h - wieldTex[LEFT].y - 1,
+			view.w * (0.2 + wieldedItem[LEFT]->offset.x * -1) - wieldTex[LEFT].x / 2.f,
+			view.h * (0.8 + wieldedItem[LEFT]->offset.y) - wieldTex[LEFT].y / 2.f,
 			wieldTex[LEFT].x,
 			wieldTex[LEFT].y
 		},
 		{
-			view.w / 1.33333f,
-			view.h - wieldTex[RIGHT].y - 1,
+			view.w * (0.8 + wieldedItem[RIGHT]->offset.x) - wieldTex[RIGHT].x / 2.f,
+			view.h * (0.8 + wieldedItem[RIGHT]->offset.y) - wieldTex[RIGHT].y / 2.f,
 			wieldTex[RIGHT].x,
 			wieldTex[RIGHT].y
 		}
 	};
-	SDL_Rect fireRect[2] = {
-		{
-			view.w * (1 - wieldedItem[LEFT]->firePoint.x) - fireTex.x / 2.f,
-			view.h * wieldedItem[LEFT]->firePoint.y - fireTex.y / 2.f,
-			fireTex.x,
-			fireTex.y
-		},
-		{
-			view.w * wieldedItem[RIGHT]->firePoint.x - fireTex.x / 2.f,
-			view.h * wieldedItem[RIGHT]->firePoint.y - fireTex.y / 2.f,
-			fireTex.x,
-			fireTex.y
-		}
-	};
 	for (int i = 0; i < 2; i++) {
-		float rot;
-		SDL_Point rotPoint;
-		rotPoint.y = wieldedItem[i]->texture->h * WIELD_SCALE;
-		if (i == 0) {
-			rot = wieldedItem[i]->rot * -1;
-			rotPoint.x = 0;
-		}
-		else {
-			rot = wieldedItem[i]->rot;
-			rotPoint.x = wieldedItem[i]->texture->w * WIELD_SCALE;
-		}
-		if (wieldedItem[i]->fireTimer > wieldedItem[i]->fireRate * 0.95f) {
-			SDL_Texture* fireTexture = IMG_LoadTexture(renderer, "res/gunshot.png");
-			SDL_RenderCopy(renderer, fireTexture, NULL, &fireRect[i]);
-		}
 		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, wieldedItem[i]->texture);
-		SDL_RenderCopyEx(renderer, itemTexture, NULL, &handRect[i], rot, &rotPoint, i == 0 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+		SDL_RenderCopyEx(renderer, itemTexture, &wieldedItem[i]->srcrect[(int)wieldedItem[i]->frame], &handRect[i], 0, NULL, i == 0 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
 	}
 
 	// Hotbar
-	SDL_Texture* hudTexture = SDL_CreateTextureFromSurface(renderer, surface[0]);
+	SDL_Texture* hudTexture = IMG_LoadTexture(renderer, "res/hudbar.png");
 	SDL_Rect hudRect = {0, view.h + 1, view.w, 24};
 	SDL_RenderCopy(renderer, hudTexture, NULL, &hudRect);
 

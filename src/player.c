@@ -92,9 +92,9 @@ void Player__INIT(Player* this, ItemFunction* itemFunc) {
 		this->equip[RIGHT] = 2;
 		this->inventory[0] = CreateItem(ITEM_PICKAXE, itemFunc);
 		this->inventory[1] = CreateItem(ITEM_NAGANT, itemFunc);
-		this->inventory[2] = CreateItem(ITEM_BRICK, itemFunc);
-		this->inventory[3] = CreateItem(ITEM_STONE, itemFunc);
-		this->inventory[4] = CreateItem(ITEM_DARK, itemFunc);
+		this->inventory[2] = CreateItem(ITEM_NAGANT, itemFunc);
+		this->inventory[3] = CreateItem(ITEM_BRICK, itemFunc);
+		this->inventory[4] = CreateItem(ITEM_STONE, itemFunc);
 		this->inventory[5] = CreateItem(ITEM_PURPLE, itemFunc);
 
 		save(this);

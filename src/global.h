@@ -1,7 +1,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#define WIELD_SCALE 3
+#define WIELD_SCALE 2
 
 typedef struct {
 	int x, y;

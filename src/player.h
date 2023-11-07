@@ -13,7 +13,7 @@
 #define CONFIG_PATH "config.json"
 #define LEFT  0
 #define RIGHT 1
-#define SLOTS 6
+#define SLOTS 8
 
 typedef struct {
 	bool quit;

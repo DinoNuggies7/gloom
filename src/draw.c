@@ -321,12 +321,12 @@ void drawHUD(SDL_Renderer* renderer, SDL_Rect view, Player player) {
 
 	// Inventory Items
 	for (int i = 0; i < SLOTS; i++) {
-		SDL_Rect rect = {264 + i * 19, view.h + 5, 16, 16};
+		SDL_Rect rect = {245 + i * 19, view.h + 5, 16, 16};
 		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, player.inventory[i].itemTexture);
 		SDL_RenderCopy(renderer, itemTexture, NULL, &rect);
 	}
 	if (player.choosing) { // Selection Icon
-		SDL_Rect rect = {262 + player.select * 19, view.h + 3, player.selectTexture->w, player.selectTexture->h};
+		SDL_Rect rect = {244 + player.select * 19, view.h + 3, player.selectTexture->w, player.selectTexture->h};
 		SDL_Texture* selectTexture = SDL_CreateTextureFromSurface(renderer, player.selectTexture);
 		SDL_RenderCopy(renderer, selectTexture, NULL, &rect);
 	}

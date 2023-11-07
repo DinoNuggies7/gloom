@@ -18,7 +18,7 @@ void Item__Nagant__INIT(Item* this, ...) {
 	this->texture = IMG_Load("res/nagantsheet.png");
 	this->itemTexture = IMG_Load("res/nagant_item.png");
 	this->offset.x = -0.1;
-	this->offset.y = -0.1;
+	this->offset.y = -0.08;
 
 	for (int j = 0; j < 3; j++) {
 		for (int i = 0; i < 3; i++) {

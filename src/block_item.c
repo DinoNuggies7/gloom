@@ -49,8 +49,8 @@ void Item__Block__USE(Item* this, ...) {
 	Player* player = va_arg(list, Player*);
 	Map* map = va_arg(list, Map*);
 
-	int x = player->pos.x + player->dir.x * 1.6;
-	int y = player->pos.y + player->dir.y * 1.6;
+	int x = player->pos.x + player->dir.x * 1.5;
+	int y = player->pos.y + player->dir.y * 1.5;
 
 	int tile = getTile(*map, x, y);
 	if (tile == TILE_NONE) {

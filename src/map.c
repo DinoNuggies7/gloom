@@ -1,4 +1,5 @@
 #include "map.h"
+#include "object.h"
 
 void parseMap(Map* map, const char* mapFile) {
 	FILE* file = fopen(mapFile, "r");
@@ -27,47 +28,69 @@ void parseMap(Map* map, const char* mapFile) {
 		}
 	}
 	map->tile = malloc(sizeof(int) * (map->w * map->h));
+	map->spawns = 0;
+	bool setSpawnPoint = false;
 	while (i < map->w * map->h) { // Load the map data
 		ch = fgetc(file);
 		switch (ch) {
-		case '.':
-			map->tile[i] = TILE_NONE;
-			i++;
-			break;
-		case '@':
-			map->tile[i] = TILE_SPAWN;
-			i++;
-			break;
-		case '?':
-			map->tile[i] = TILE_GLITCHED;
-			i++;
-			break;
-		case 'R':
-			map->tile[i] = TILE_RED;
-			i++;
-			break;
-		case 'G':
-			map->tile[i] = TILE_GREEN;
-			i++;
-			break;
-		case 'P':
-			map->tile[i] = TILE_PURPLE;
-			i++;
-			break;
-		case 'B':
-			map->tile[i] = TILE_BRICK;
-			i++;
-			break;
-		case 'S':
-			map->tile[i] = TILE_STONE;
-			i++;
-			break;
-		case 'D':
-			map->tile[i] = TILE_DARK;
-			i++;
-			break;
-		case '\n':
-			break;
+			case '.':
+				map->tile[i] = TILE_NONE;
+				i++;
+				break;
+			case '@':
+				map->tile[i] = TILE_NONE;
+				char typeChar = fgetc(file);
+				if (typeChar == 'p')
+					map->tile[i] = TILE_SPAWN;
+				else {
+					map->spawn[map->spawns].x = i % map->w;
+					map->spawn[map->spawns].y = i / map->w;
+					switch (typeChar) {
+						case ' ':
+							map->spawn[map->spawns].z = OBJECT_NONE;
+							break;
+						case 'd':
+							map->spawn[map->spawns].z = OBJECT_DERK;
+							break;
+						case 'c':
+							map->spawn[map->spawns].z = OBJECT_CHAIR;
+							break;
+					}
+					map->spawns++;
+				}
+				setSpawnPoint = false;
+				i++;
+				break;
+			case '?':
+				map->tile[i] = TILE_GLITCHED;
+				i++;
+				break;
+			case 'R':
+				map->tile[i] = TILE_RED;
+				i++;
+				break;
+			case 'G':
+				map->tile[i] = TILE_GREEN;
+				i++;
+				break;
+			case 'P':
+				map->tile[i] = TILE_PURPLE;
+				i++;
+				break;
+			case 'B':
+				map->tile[i] = TILE_BRICK;
+				i++;
+				break;
+			case 'S':
+				map->tile[i] = TILE_STONE;
+				i++;
+				break;
+			case 'D':
+				map->tile[i] = TILE_DARK;
+				i++;
+				break;
+			case '\n':
+				break;
 		}
 	}
 }

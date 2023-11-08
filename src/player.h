@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "global.h"
+#include "vector.h"
 #include "item.h"
 #include "map.h"
 

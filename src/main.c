@@ -42,28 +42,27 @@ int main(int argc, char** argv) {
 	Player player;
 	Player__INIT(&player, &itemFunc);
 
+	Map map;
+	parseMap(&map, player.map);
+
 	ObjectFunction objFunc;
 	SetObjectFunctions(&objFunc);
 
-	int objects = 2;
+	int objects = map.spawns;
 	Object object[objects];
-	object[0] = CreateObject(OBJECT_DERK, &objFunc);
-	object[1] = CreateObject(OBJECT_CHAIR, &objFunc);
 
-	object[0].pos.x = 4;
-	object[0].pos.y = 3.5;
-	object[1].pos.x = 7;
-	object[1].pos.y = 6;
-
-	Map map;
-	parseMap(&map, player.map);
+	for (int i = 0; i < objects; i++) {
+		object[i] = CreateObject(map.spawn[i].z, &objFunc);
+		object[i].pos.x = map.spawn[i].x + 0.5;
+		object[i].pos.y = map.spawn[i].y + 0.5;
+	}
 
 	for (int j = 0; j < map.h; j++) {		// Print map data
 		for (int i = 0; i < map.w; i++) {
 			if (getTile(map, i, j) == TILE_SPAWN) {
 				printf("@ ");
-				player.pos.x = i;	// Setting player spawn point,
-				player.pos.y = j;	//  should move to player.c (maybe)
+				player.pos.x = i;
+				player.pos.y = j;
 			}
 			else if (getTile(map, i, j) > TILE_COLLISION_START && getTile(map, i, j) < TILE_COLLISION_END)
 				printf("%d ", getTile(map, i, j));
@@ -91,7 +90,7 @@ int main(int argc, char** argv) {
 				ObjectGlobalUPDATE(&object[i], player, map, dt);
 			}
 			else // Remove Objects
-				ObjectGlobalINIT(&object[i]);			
+				DestroyObject(&object[i]);			
 		}
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);

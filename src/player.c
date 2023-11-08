@@ -150,11 +150,7 @@ void camera(Player* this, float dt) {
 	this->xrel = 0;
 
 	// Normalizing dir
-	float magnitude = this->dir.x * this->dir.x + this->dir.y * this->dir.y;
-	if (magnitude != 0) {
-		this->dir.x /= magnitude;
-		this->dir.y /= magnitude;
-	}
+	this->dir = NormalizeVec2F(this->dir);
 }
 
 void movement(Player* this, float dt) {

@@ -59,7 +59,7 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture
 	}
 	for (int t = 0; t < objects; t++) {
 		Object* obj = &object[drawOrder[t]];
-		if (obj->type != OBJECT_NONE) {
+		if (obj->type > OBJECT_NULL && obj->type < OBJECT_TYPES) {
 
 			float x = obj->pos.x - player.pos.x;
 			float y = obj->pos.y - player.pos.y;
@@ -167,7 +167,7 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture
 				break;
 		}
 
-		// Calculate the distance projceted on camera direction
+		// Calculate the distance projected on camera direction
 		// (Euclidian distance would give fisheye effect)
 		if (side)
 			perpWallDist = (sideDist.y - deltaDist.y);
@@ -237,7 +237,7 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture
 		for (int i = drawStart; i < drawEnd; i++) {
 			bool draw = true;
 			for (int j = 0; j < objects; j++) {
-				if (object[j].type != OBJECT_NONE) {
+				if (object[j].type > OBJECT_NULL && object[j].type < OBJECT_TYPES) {
 					int spriteX = object[j].rect.x - object[j].rect.w / 2;
 					int spriteW = object[j].rect.x + object[j].rect.w / 2;
 					int spriteY = object[j].rect.y;

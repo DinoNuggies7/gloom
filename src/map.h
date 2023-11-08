@@ -1,6 +1,10 @@
 #ifndef MAP_H
 #define MAP_H
 
+#define MAX_OBJECTS 16
+
+#include "vector.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -8,6 +12,7 @@
 typedef struct {
 	int w, h;
 	int* tile;
+	Vec3I spawn[MAX_OBJECTS]; int spawns;
 } Map;
 
 enum MapTile {

@@ -2,10 +2,10 @@
 #include "objects.h"
 
 void SetObjectFunctions(ObjectFunction* objFunc) {
-	objFunc->INIT_[OBJECT_DERK] = &Object__Derk__INIT;
-	objFunc->UPDATE_[OBJECT_DERK] = &Object__Derk__UPDATE;
-	objFunc->INIT_[OBJECT_CHAIR] = &Object__Chair__INIT;
-	objFunc->UPDATE_[OBJECT_CHAIR] = &Object__Chair__UPDATE;
+	objFunc->INIT_[OBJECT_CHAIR] = &Chair_Object_INIT;
+	objFunc->UPDATE_[OBJECT_CHAIR] = &Chair_Object_UPDATE;
+	objFunc->INIT_[OBJECT_DERK] = &Derk_Object_INIT;
+	objFunc->UPDATE_[OBJECT_DERK] = &Derk_Object_UPDATE;
 }
 
 // Function for Spawning Objects
@@ -21,6 +21,14 @@ Object CreateObject(int type, ObjectFunction* objFunc) {
 	return object;
 }
 
+// Function for Removing Objects
+void DestroyObject(Object* this) {
+	printf("Removed Object\n");
+	this->destroy = false;
+	this->type = OBJECT_NULL;
+	this->texture = IMG_Load("res/null.png");
+}
+
 // Global Object Init
 void ObjectGlobalINIT(Object* this) {
 	printf("Spawned Object\n");
@@ -28,6 +36,7 @@ void ObjectGlobalINIT(Object* this) {
 	this->type = OBJECT_NONE;
 	this->hitbox = 0.5f;
 	this->speed = 0;
+	this->hp = this->maxHealth = 1;
 	this->pos.x = this->pos.y = 0;
 	this->vel.x = this->vel.y = 0;
 	this->dir.x = this->dir.y = 0;
@@ -43,11 +52,8 @@ void ObjectGlobalUPDATE(Object* this, Player player, Map map, float dt) {
 	for (int i = 0; i < SLOTS; i++) {
 		if (player.inventory[i].isGun) {
 			if (player.inventory[i].isFiring) {
-				for (float j = 1; true; j += 0.001) {
+				for (float j = 0; true; j += 0.001) {
 					Vec2F dir = player.dir;
-					float magnitude = player.dir.x * player.dir.x + player.dir.y * player.dir.y;
-					dir.x /= magnitude;
-					dir.y /= magnitude;
 
 					float x = player.pos.x + player.dir.x * j;
 					float y = player.pos.y + player.dir.y * j;
@@ -70,6 +76,6 @@ void ObjectGlobalUPDATE(Object* this, Player player, Map map, float dt) {
 	}
 
 	// If no hp then die
-	if (this->hp <= 0 && this->type != OBJECT_NONE)
+	if (this->hp <= 0 && this->type > OBJECT_NULL)
 		this->destroy = true;
 }

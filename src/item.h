@@ -1,8 +1,6 @@
 #ifndef ITEM_H
 #define ITEM_H
 
-#include "global.h"
-
 #include <stdbool.h>
 #include <SDL2/SDL_image.h>
 

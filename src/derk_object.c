@@ -1,15 +1,15 @@
 #include "derk_object.h"
 
 // Derk Object
-void Object__Derk__INIT(Object* this, ...) {
+void Derk_Object_INIT(Object* this, ...) {
 	printf("<Gaylord has joined the game>\n");
-	this->speed = 4.f;
-	this->hitbox = 0.3f;
+	this->speed = 1.5;
+	this->hitbox = 0.3;
 	this->hp = this->maxHealth = 8;
 	this->texture = IMG_Load("res/derk.png");
 }
 
-void Object__Derk__UPDATE(Object* this, ...) {
+void Derk_Object_UPDATE(Object* this, ...) {
 	va_list list;
 	va_start(list, this);
 	double dt = va_arg(list, double);
@@ -22,13 +22,9 @@ void Object__Derk__UPDATE(Object* this, ...) {
 	this->dir.y = player->pos.y - this->pos.y;
 
 	// Normalize dir vector
-	float magnitude = this->dir.x * this->dir.x + this->dir.y * this->dir.y;
-	this->dir.x /= magnitude;
-	this->dir.y /= magnitude;
-	if (magnitude != 0)  {
-		this->vel.x = this->dir.x * this->speed;
-		this->vel.y = this->dir.y * this->speed;
-	}
+	this->dir = NormalizeVec2F(this->dir);
+	this->vel.x = this->dir.x * this->speed;
+	this->vel.y = this->dir.y * this->speed;
 
 	// Wall Collision
 	Vec2I tile[4];

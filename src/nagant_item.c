@@ -8,9 +8,6 @@ void Item__Nagant__INIT(Item* this, ...) {
 	this->ammo = this->rounds = 7;
 	this->fireRate = 0.4;
 	this->reloadRate = 2;
-	// this->drot = -15;
-	// this->rotPoint.x = 1, this->rotPoint.y = 1;
-	// this->firePoint.x = 0.7, this->firePoint.y = 0.68;
 	this->frames = 9;
 	this->frameRect.x = 1; this->frameRect.y = 1;
 	this->frameRect.w = 128; this->frameRect.h = 128;

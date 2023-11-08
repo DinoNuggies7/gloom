@@ -3,7 +3,7 @@
 
 #include "object.h"
 
-void Object__Chair__INIT(Object* object, ...);
-void Object__Chair__UPDATE(Object* object, ...);
+void Chair_Object_INIT(Object* object, ...);
+void Chair_Object_UPDATE(Object* object, ...);
 
 #endif

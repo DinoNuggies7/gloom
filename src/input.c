@@ -11,14 +11,6 @@ void handleInput(SDL_Event* event, Player* player) {
 		if (event->type == SDL_MOUSEWHEEL)
 			player->scroll = event->wheel.y;
 
-		// Press
-		// if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && !player->leftclick)
-		// 	player->leftclickp = true;
-		// else player->leftclickp = false;
-		// if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_RIGHT && !player->rightclick)
-		// 	player->rightclickp = true;
-		// else player->rightclickp = false;
-
 		if (event->type == SDL_MOUSEBUTTONDOWN) {
 			switch (event->button.button) {
 				case SDL_BUTTON_LEFT:

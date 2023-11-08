@@ -3,7 +3,7 @@
 
 #include "object.h"
 
-void Object__Derk__INIT(Object* object, ...);
-void Object__Derk__UPDATE(Object* object, ...);
+void Derk_Object_INIT(Object* object, ...);
+void Derk_Object_UPDATE(Object* object, ...);
 
 #endif

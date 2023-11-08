@@ -1,7 +1,9 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#include "global.h"
+#define WIELD_SCALE 2
+
+#include "vector.h"
 #include "object.h"
 #include "player.h"
 #include "map.h"

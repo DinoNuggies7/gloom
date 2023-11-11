@@ -39,7 +39,7 @@ void drawBackground(SDL_Renderer* renderer, SDL_Rect view) {
 	}
 }
 
-void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture, int objects, Object object[objects], Player player, Map map) {
+void drawForeground(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view, int objects, Object object[objects], Player player, Map map) {
 	// Draw Objects
 	int drawOrder[objects];
 	for (int i = 0; i < objects; i++)
@@ -185,7 +185,7 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture
 		if (drawEnd >= view.h) drawEnd = view.h;
 
 		// choose wall color
-		SDL_Surface* tex = NULL;
+		int texNum = -1;
 		SDL_Color color;
 		color.a = 255;
 		switch (hit) {
@@ -210,13 +210,13 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture
 				color.b = 150;
 				break;
 			case TILE_BRICK:
-				tex = texture[0];
+				texNum = TEXTURE_BRICK;
 				break;
 			case TILE_STONE:
-				tex = texture[1];
+				texNum = TEXTURE_STONE;
 				break;
 			case TILE_DARK:
-				tex = texture[2];
+				texNum = TEXTURE_DARK;
 				break;
 			default:
 				color.r = 0;
@@ -259,7 +259,9 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture
 				}
 			}
 			if (draw) {
-				if (tex != NULL) {
+				if (texNum != -1) {
+					SDL_Surface* wallTexture = texture[texNum];
+
 					//calculate value of wallX
 					float wallX; //where exactly the wall was hit
 					if (side == 0) wallX = player.pos.y + perpWallDist * rayDir.y;
@@ -267,13 +269,13 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture
 					wallX -= floor((wallX));
 
 					//x coordinate on the texture
-					int texX = wallX * tex->w;
-					if(side == 0 && rayDir.x > 0) texX = tex->w - texX - 1;
-					if(side == 1 && rayDir.y < 0) texX = tex->w - texX - 1;
+					int texX = wallX * wallTexture->w;
+					if(side == 0 && rayDir.x > 0) texX = wallTexture->w - texX - 1;
+					if(side == 1 && rayDir.y < 0) texX = wallTexture->w - texX - 1;
 					int d = (i) * 256 - view.h * 128 + texH * 128;
-					int texY = ((d * tex->h) / texH) / 256;
+					int texY = ((d * wallTexture->h) / texH) / 256;
 
-					SDL_GetRGB(getPixel(tex, texX, texY), tex->format, &color.r, &color.g, &color.b);
+					SDL_GetRGB(getPixel(wallTexture, texX, texY), wallTexture->format, &color.r, &color.g, &color.b);
 					// give x and y sides different brightness
 					if (!side && hit) {
 						color.r /= 2; 
@@ -288,46 +290,46 @@ void drawForeground(SDL_Renderer* renderer, SDL_Rect view, SDL_Surface** texture
 	}
 }
 
-void drawHUD(SDL_Renderer* renderer, SDL_Rect view, Player player) {
+void drawHUD(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view, Player player) {
 	// Equipped Items
 	Item* wieldedItem[2] = {&player.inventory[player.equip[LEFT]], &player.inventory[player.equip[RIGHT]]};
-	Vec2I wieldTex[2] = {
-		{wieldedItem[LEFT]->frameRect.w * WIELD_SCALE, wieldedItem[LEFT]->frameRect.h * WIELD_SCALE},
-		{wieldedItem[RIGHT]->frameRect.w * WIELD_SCALE, wieldedItem[RIGHT]->frameRect.h * WIELD_SCALE}
-	};
 	SDL_Rect handRect[2] = {
 		{
-			view.w * (0.2 + wieldedItem[LEFT]->offset.x * -1) - wieldTex[LEFT].x / 2.f,
-			view.h * (0.8 + wieldedItem[LEFT]->offset.y) - wieldTex[LEFT].y / 2.f,
-			wieldTex[LEFT].x,
-			wieldTex[LEFT].y
+			view.w * (0.2 + wieldedItem[LEFT]->offset.x * -1) - (wieldedItem[LEFT]->frameRect.w * WIELD_SCALE) / 2.f,
+			view.h * (0.8 + wieldedItem[LEFT]->offset.y     ) - (wieldedItem[LEFT]->frameRect.h * WIELD_SCALE) / 2.f,
+			wieldedItem[LEFT]->frameRect.w * WIELD_SCALE,
+			wieldedItem[LEFT]->frameRect.h * WIELD_SCALE
 		},
 		{
-			view.w * (0.8 + wieldedItem[RIGHT]->offset.x) - wieldTex[RIGHT].x / 2.f,
-			view.h * (0.8 + wieldedItem[RIGHT]->offset.y) - wieldTex[RIGHT].y / 2.f,
-			wieldTex[RIGHT].x,
-			wieldTex[RIGHT].y
+			view.w * (0.8 + wieldedItem[RIGHT]->offset.x) - (wieldedItem[RIGHT]->frameRect.w * WIELD_SCALE) / 2.f,
+			view.h * (0.8 + wieldedItem[RIGHT]->offset.y) - (wieldedItem[RIGHT]->frameRect.h * WIELD_SCALE) / 2.f,
+			wieldedItem[RIGHT]->frameRect.w * WIELD_SCALE,
+			wieldedItem[RIGHT]->frameRect.h * WIELD_SCALE
 		}
 	};
 	for (int i = 0; i < 2; i++) {
-		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, wieldedItem[i]->texture);
-		SDL_RenderCopyEx(renderer, itemTexture, &wieldedItem[i]->srcrect[(int)wieldedItem[i]->frame], &handRect[i], 0, NULL, i == 0 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+		SDL_Texture* wieldTexture = SDL_CreateTextureFromSurface(renderer, wieldedItem[i]->texture);
+		SDL_RenderCopyEx(renderer, wieldTexture, &wieldedItem[i]->srcrect[(int)wieldedItem[i]->frame], &handRect[i], 0, NULL, i == 0 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+		SDL_DestroyTexture(wieldTexture);
 	}
 
 	// Hotbar
-	SDL_Texture* hudTexture = IMG_LoadTexture(renderer, "res/hudbar.png");
+	SDL_Texture* hudbarTexture = SDL_CreateTextureFromSurface(renderer, texture[TEXTURE_HUDBAR]);
 	SDL_Rect hudRect = {0, view.h + 1, view.w, 24};
-	SDL_RenderCopy(renderer, hudTexture, NULL, &hudRect);
+	SDL_RenderCopy(renderer, hudbarTexture, NULL, &hudRect);
+	SDL_DestroyTexture(hudbarTexture);
 
 	// Inventory Items
 	for (int i = 0; i < SLOTS; i++) {
 		SDL_Rect rect = {245 + i * 19, view.h + 5, 16, 16};
 		SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, player.inventory[i].itemTexture);
 		SDL_RenderCopy(renderer, itemTexture, NULL, &rect);
+		SDL_DestroyTexture(itemTexture);
 	}
 	if (player.choosing) { // Selection Icon
-		SDL_Rect rect = {244 + player.select * 19, view.h + 3, player.selectTexture->w, player.selectTexture->h};
+		SDL_Rect rect = {243 + player.select * 19, view.h + 3, player.selectTexture->w, player.selectTexture->h};
 		SDL_Texture* selectTexture = SDL_CreateTextureFromSurface(renderer, player.selectTexture);
 		SDL_RenderCopy(renderer, selectTexture, NULL, &rect);
+		SDL_DestroyTexture(selectTexture);
 	}
 }

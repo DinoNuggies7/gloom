@@ -1,8 +1,7 @@
 # Define the compiler and compilation flags
-CC = gcc
 CCACHE = ccache
 CFLAGS = -g
-LIBS = -lm -lSDL2 -lSDL2_image -lcjson
+LIBS = -lm -lSDL2 -lSDL2_image
 
 # Directories
 SRC_DIR = src

@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include "cJSON.h"
 #include "vector.h"
 #include "item.h"
 #include "map.h"
@@ -8,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
-#include <cjson/cJSON.h>
 
 #define CONFIG_PATH "config.json"
 #define LEFT  0

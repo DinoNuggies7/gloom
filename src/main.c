@@ -112,3 +112,7 @@ int main(int argc, char** argv) {
 	SDL_Quit();
 	return 0;
 }
+
+int WinMain(int argc, char** argv) {
+	return main(argc, argv);
+}

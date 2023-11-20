@@ -73,8 +73,8 @@ int main(int argc, char** argv) {
 		printf("\n");
 	}
 
+	SDL_Event event;
 	while (!player.quit) {
-		SDL_Event event;
 		handleInput(&event, &player);
 
 		lastTicks = ticks;

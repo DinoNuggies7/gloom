@@ -1,8 +1,9 @@
 # Define the compiler and compilation flags
-CC = gcc
+CC = x86_64-w64-mingw32-gcc
 CCACHE = ccache
 CFLAGS = -g
-LIBS = -lm -lSDL2 -lSDL2_image
+LIBS = -lSDL2 -lSDL2_image
+WIN_LIBS = -static-libgcc -Wl,-Bstatic -lpthread -lcomctl32 -lpsapi -lmingw32 $(LIBS) -mwindows -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -Wl,-Bdynamic
 
 # Directories
 SRC_DIR = src
@@ -14,8 +15,7 @@ OBJ_FILES = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC_FILES))
 
 # The default target is to build all object files
 all: clean $(OBJ_FILES)
-	$(CCACHE) $(CC) $(BUILD_DIR)/*.o $(LIBS)
-	./a.out
+	$(CCACHE) $(CC) $(BUILD_DIR)/*.o $(WIN_LIBS) -o GLOOM.EXE
 
 # Rule to compile a .c file to a .o file
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c

@@ -30,13 +30,12 @@ enum ItemType {
 
 	ITEM_TYPES,
 };
-typedef struct ItemFunction {
+extern struct ItemFunction {
 	void (*INIT_[ITEM_TYPES])(Item* item, ...);
 	void (*USE_[ITEM_TYPES])(Item* item, ...);
-} ItemFunction;
+} itemFunc;
 
-void SetItemFunctions(ItemFunction* itemFunc);
-Item CreateItem(int type, ItemFunction* itemFunc);
+Item CreateItem(int type);
 
 void ItemGlobalINIT(Item* item);
 void ItemGlobalUPDATE(Item* item, float dt);

@@ -24,13 +24,12 @@ enum ObjectType {
 
 	OBJECT_TYPES,
 };
-typedef struct ObjectFunction {
-void (*INIT_[OBJECT_TYPES])(Object* object, ...);
-void (*UPDATE_[OBJECT_TYPES])(Object* object, ...);
-} ObjectFunction;
+extern struct ObjectFunction {
+	void (*INIT_[OBJECT_TYPES])(Object* object, ...);
+	void (*UPDATE_[OBJECT_TYPES])(Object* object, ...);
+} objFunc;
 
-void SetObjectFunctions(ObjectFunction* objFunc);
-Object CreateObject(int type, ObjectFunction* objFunc);
+Object CreateObject(int type);
 void DestroyObject(Object* object);
 
 void ObjectGlobalINIT(Object* object);

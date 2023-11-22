@@ -1,20 +1,15 @@
 #include "object.h"
-#include "objects.h"
 
-void SetObjectFunctions(ObjectFunction* objFunc) {
-	objFunc->INIT_[OBJECT_CHAIR] = &Chair_Object_INIT;
-	objFunc->UPDATE_[OBJECT_CHAIR] = &Chair_Object_UPDATE;
-	objFunc->INIT_[OBJECT_DERK] = &Derk_Object_INIT;
-	objFunc->UPDATE_[OBJECT_DERK] = &Derk_Object_UPDATE;
-}
+// True objFunc declaration
+struct ObjectFunction objFunc;
 
 // Function for Spawning Objects
-Object CreateObject(int type, ObjectFunction* objFunc) {
+Object CreateObject(int type) {
 	Object object;
 	ObjectGlobalINIT(&object);
 	if (type > OBJECT_NONE && type < OBJECT_TYPES) {
-		object.init = objFunc->INIT_[type];
-		object.update = objFunc->UPDATE_[type];
+		object.init = objFunc.INIT_[type];
+		object.update = objFunc.UPDATE_[type];
 		object.type = type;
 		object.init(&object);
 	}

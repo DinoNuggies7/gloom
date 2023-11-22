@@ -31,29 +31,26 @@ int main(int argc, char** argv) {
 	texture[TEXTURE_HUDBAR]	= IMG_Load("res/hudbar.png");
 	texture[TEXTURE_BRICK]	= IMG_Load("res/brick.png");
 	texture[TEXTURE_STONE]	= IMG_Load("res/stone.png");
-	texture[TEXTURE_DARK]	= IMG_Load("res/darkbrickbig.png");
+	texture[TEXTURE_DARK]	= IMG_Load("res/dark.png");
 
 	float ticks = SDL_GetTicks();
 	float lastTicks;
 	float dt;
 
-	ItemFunction itemFunc;
-	SetItemFunctions(&itemFunc);
+	// ItemFunction itemFunc;
+	// SetItemFunctions(&itemFunc);
 
 	Player player;
-	Player__INIT(&player, &itemFunc);
+	Player__INIT(&player);
 
 	Map map;
 	parseMap(&map, player.map);
-
-	ObjectFunction objFunc;
-	SetObjectFunctions(&objFunc);
 
 	int objects = map.spawns;
 	Object object[objects];
 
 	for (int i = 0; i < objects; i++) {
-		object[i] = CreateObject(map.spawn[i].z, &objFunc);
+		object[i] = CreateObject(map.spawn[i].z);
 		object[i].pos.x = map.spawn[i].x + 0.5;
 		object[i].pos.y = map.spawn[i].y + 0.5;
 	}

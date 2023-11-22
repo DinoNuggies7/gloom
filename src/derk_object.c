@@ -1,4 +1,4 @@
-#include "derk_object.h"
+#include "object.h"
 
 // Derk Object
 void Derk_Object_INIT(Object* this, ...) {
@@ -51,4 +51,9 @@ void Derk_Object_UPDATE(Object* this, ...) {
 		printf("damn you actually gay asf\n");
 		player->quit = true;
 	}
+}
+
+void __attribute__((constructor)) InitDerk() {
+	objFunc.INIT_[OBJECT_DERK] = &Derk_Object_INIT;
+	objFunc.UPDATE_[OBJECT_DERK] = &Derk_Object_UPDATE;
 }

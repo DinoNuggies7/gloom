@@ -1,4 +1,4 @@
-#include "nagant_item.h"
+#include "item.h"
 #include "player.h"
 
 void Item__Nagant__INIT(Item* this, ...) {
@@ -29,4 +29,9 @@ void Item__Nagant__INIT(Item* this, ...) {
 
 void Item__Nagant__USE(Item* this, ...) {
 	ItemGlobalUSE(this);
+}
+
+void __attribute__((constructor)) InitNagant() {
+	itemFunc.INIT_[ITEM_NAGANT] = &Item__Nagant__INIT;
+	itemFunc.USE_[ITEM_NAGANT] = &Item__Nagant__USE;
 }

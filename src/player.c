@@ -20,7 +20,7 @@ void save(Player* this) {
 	printf("saved game\n");
 }
 
-void load(Player* this, FILE* file, ItemFunction* itemFunc) {
+void load(Player* this, FILE* file) {
 	char buffer[1024];
 	int len = fread(buffer, 1, sizeof(buffer), file);
 	cJSON* json = cJSON_Parse(buffer);
@@ -52,7 +52,7 @@ void load(Player* this, FILE* file, ItemFunction* itemFunc) {
 		snprintf(buffer, 5, "inv%d", i);
 		inv[i] = cJSON_GetObjectItemCaseSensitive(json, buffer);
 		if (cJSON_IsNumber(inv[i]))
-			this->inventory[i] = CreateItem(inv[i]->valueint, itemFunc);
+			this->inventory[i] = CreateItem(inv[i]->valueint);
 	}
 
 	fclose(file);
@@ -60,7 +60,7 @@ void load(Player* this, FILE* file, ItemFunction* itemFunc) {
 	printf("loaded game\n");
 }
 
-void Player__INIT(Player* this, ItemFunction* itemFunc) {
+void Player__INIT(Player* this) {
 	this->quit = false;
 	this->maxSpeed = 5.f;
 	this->speed = 5.f;
@@ -90,19 +90,19 @@ void Player__INIT(Player* this, ItemFunction* itemFunc) {
 		this->sensitivity = 0.5;
 		this->equip[LEFT] = 0;
 		this->equip[RIGHT] = 2;
-		this->inventory[0] = CreateItem(ITEM_PICKAXE, itemFunc);
-		this->inventory[1] = CreateItem(ITEM_NAGANT, itemFunc);
-		this->inventory[2] = CreateItem(ITEM_NAGANT, itemFunc);
-		this->inventory[3] = CreateItem(ITEM_BRICK, itemFunc);
-		this->inventory[4] = CreateItem(ITEM_STONE, itemFunc);
-		this->inventory[5] = CreateItem(ITEM_DARK, itemFunc);
-		this->inventory[6] = CreateItem(ITEM_RED, itemFunc);
-		this->inventory[7] = CreateItem(ITEM_PURPLE, itemFunc);
+		this->inventory[0] = CreateItem(ITEM_PICKAXE);
+		this->inventory[1] = CreateItem(ITEM_NAGANT);
+		this->inventory[2] = CreateItem(ITEM_NAGANT);
+		this->inventory[3] = CreateItem(ITEM_BRICK);
+		this->inventory[4] = CreateItem(ITEM_STONE);
+		this->inventory[5] = CreateItem(ITEM_DARK);
+		this->inventory[6] = CreateItem(ITEM_RED);
+		this->inventory[7] = CreateItem(ITEM_PURPLE);
 
 		save(this);
 	}
 	else
-		load(this, file, itemFunc);
+		load(this, file);
 }
 
 void camera(Player* player, float dt);

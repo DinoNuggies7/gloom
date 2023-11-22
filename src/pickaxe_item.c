@@ -1,4 +1,4 @@
-#include "pickaxe_item.h"
+#include "item.h"
 #include "player.h"
 
 void Item__Pickaxe__INIT(Item* this, ...) {
@@ -20,4 +20,9 @@ void Item__Pickaxe__USE(Item* this, ...) {
 	if (tile > TILE_COLLISION_START && tile < TILE_COLLISION_END) {
 		setTile(map, x, y, TILE_NONE);
 	}
+}
+
+void __attribute__((constructor)) InitPickaxe() {
+	itemFunc.INIT_[ITEM_PICKAXE] = &Item__Pickaxe__INIT;
+	itemFunc.USE_[ITEM_PICKAXE] = &Item__Pickaxe__USE;
 }

@@ -1,5 +1,5 @@
 # GLOOM
-A WIP DOOM insipred game
+A WIP DOOM inspired game
 
 # Building
 ```bash

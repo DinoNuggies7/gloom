@@ -1,4 +1,4 @@
-# GLOOM
+# GLOOM (opengl switch)
 A WIP DOOM inspired game
 
 # Building

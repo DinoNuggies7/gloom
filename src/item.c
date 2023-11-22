@@ -21,8 +21,7 @@ void ItemGlobalINIT(Item* this) {
 	printf("Created Item\n");
 	this->type = ITEM_NONE;
 	this->isGun = this->isFiring = false;
-	this->range = this->tile = 0;
-	this->ammo = this->rounds = 0;
+	this->ammo = this->range = this->rounds = 0;
 	this->fireTimer = this->reloadTimer = 0;
 	this->fireRate = this->reloadRate = 0;
 	this->frame = this->frames = 0; this->srcrect = NULL;

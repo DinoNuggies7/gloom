@@ -29,7 +29,6 @@ typedef struct {
 
 void save(Player* player);
 
-// void Player__INIT(Player* player, ItemFunction* itemFunc);
 void Player__INIT(Player* player);
 void Player__UPDATE(Player* player, Map* map, float dt);
 

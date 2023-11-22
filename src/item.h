@@ -9,7 +9,7 @@ typedef struct Item {
 	void (*update)(struct Item*, ...);
 	void (*use)(struct Item*, ...);
 	bool isGun, isFiring;
-	int type, tile, ammo, rounds, damage, frames;
+	int type, ammo, rounds, damage, frames;
 	float frame, range, fireTimer, reloadTimer, fireRate, reloadRate;
 	SDL_Surface* texture;
 	SDL_Surface* itemTexture;

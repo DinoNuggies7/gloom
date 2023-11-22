@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 	SDL_DisplayMode display;
 	SDL_GetCurrentDisplayMode(0, &display);
 
-	window = SDL_CreateWindow("doom'd", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display.w, display.h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	window = SDL_CreateWindow("GLOOM", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display.w, display.h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_FULLSCREEN_DESKTOP);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	SDL_Rect view = {0, 0, 640, 336};
@@ -70,8 +70,8 @@ int main(int argc, char** argv) {
 		printf("\n");
 	}
 
+	SDL_Event event;
 	while (!player.quit) {
-		SDL_Event event;
 		handleInput(&event, &player);
 
 		lastTicks = ticks;
@@ -108,4 +108,8 @@ int main(int argc, char** argv) {
 	IMG_Quit();
 	SDL_Quit();
 	return 0;
+}
+
+int WinMain(int argc, char** argv) {
+	return main(argc, argv);
 }

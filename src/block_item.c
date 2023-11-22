@@ -6,10 +6,10 @@ void Item__Block__INIT(Item* this, ...) {
 	this->damage = this->type + (TILE_RED - ITEM_RED);
 
 	// Getting the right item texture
-	char texturePath[14] = "res/block";
+	char texturePath[15] = "res/block";
 	char textureNum[2];
 	sprintf(textureNum, "%d", this->type - 3);
-	strncat(texturePath, textureNum, 1);
+	strncat(texturePath, textureNum, 2);
 	strcat(texturePath, ".png");
 
 	this->texture = this->itemTexture = IMG_Load(texturePath);

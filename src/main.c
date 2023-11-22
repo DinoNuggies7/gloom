@@ -16,7 +16,9 @@ int main(int argc, char** argv) {
 	SDL_DisplayMode display;
 	SDL_GetCurrentDisplayMode(0, &display);
 
-	window = SDL_CreateWindow("GLOOM", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display.w, display.h, SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_FULLSCREEN_DESKTOP);
+	window = SDL_CreateWindow("GLOOM", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display.w, display.h, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_Surface* icon = IMG_Load("res/derrickfull.png");
+	SDL_SetWindowIcon(window, icon);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	SDL_Rect view = {0, 0, 640, 336};
@@ -103,6 +105,19 @@ int main(int argc, char** argv) {
 	
 	save(&player);
 
+	SDL_FreeSurface(icon);
+	SDL_FreeSurface(player.selectTexture);
+	for (int i = 0; i < SLOTS; i++) {
+		SDL_FreeSurface(player.inventory[i].texture);
+		if (player.inventory[i].texture != player.inventory[i].itemTexture)
+			SDL_FreeSurface(player.inventory[i].itemTexture);
+	}
+	for (int i = 0; i < objects; i++) {
+		SDL_FreeSurface(object[i].texture);
+	}
+	for (int i = 0; i < TEXTURES; i++) {
+		SDL_FreeSurface(texture[i]);
+	}
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	IMG_Quit();

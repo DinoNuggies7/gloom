@@ -260,8 +260,6 @@ void drawForeground(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view
 			}
 			if (draw) {
 				if (texNum != -1) {
-					SDL_Surface* wallTexture = texture[texNum];
-
 					//calculate value of wallX
 					float wallX; //where exactly the wall was hit
 					if (side == 0) wallX = player.pos.y + perpWallDist * rayDir.y;
@@ -269,13 +267,13 @@ void drawForeground(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view
 					wallX -= floor((wallX));
 
 					//x coordinate on the texture
-					int texX = wallX * wallTexture->w;
-					if(side == 0 && rayDir.x > 0) texX = wallTexture->w - texX - 1;
-					if(side == 1 && rayDir.y < 0) texX = wallTexture->w - texX - 1;
+					int texX = wallX * texture[texNum]->w;
+					if(side == 0 && rayDir.x > 0) texX = texture[texNum]->w - texX - 1;
+					if(side == 1 && rayDir.y < 0) texX = texture[texNum]->w - texX - 1;
 					int d = (i) * 256 - view.h * 128 + texH * 128;
-					int texY = ((d * wallTexture->h) / texH) / 256;
+					int texY = ((d * texture[texNum]->h) / texH) / 256;
 
-					SDL_GetRGB(getPixel(wallTexture, texX, texY), wallTexture->format, &color.r, &color.g, &color.b);
+					SDL_GetRGB(getPixel(texture[texNum], texX, texY), texture[texNum]->format, &color.r, &color.g, &color.b);
 					// give x and y sides different brightness
 					if (!side && hit) {
 						color.r /= 2; 

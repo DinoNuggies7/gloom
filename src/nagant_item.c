@@ -31,7 +31,7 @@ void Item__Nagant__USE(Item* this, ...) {
 	ItemGlobalUSE(this);
 }
 
-void __attribute__((constructor)) SetRegistry() {
+void __attribute__((constructor)) SetRegistry_Item_Nagant() {
 	ItemVtableRegistry.INIT_[ITEM_NAGANT] = &Item__Nagant__INIT;
 	ItemVtableRegistry.USE_[ITEM_NAGANT] = &Item__Nagant__USE;
 }

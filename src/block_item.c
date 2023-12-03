@@ -32,9 +32,9 @@ void Item__Block__USE(Item* this, ...) {
 	}
 }
 
-void __attribute__((constructor)) InitBlocks() {
+void __attribute__((constructor)) SetRegistry() {
 	for (int i = ITEM_RED; i < ITEM_TYPES; i++) {
-		itemFunc.INIT_[i] = &Item__Block__INIT;
-		itemFunc.USE_[i] = &Item__Block__USE;
+		ItemVtableRegistry.INIT_[i] = &Item__Block__INIT;
+		ItemVtableRegistry.USE_[i] = &Item__Block__USE;
 	}
 }

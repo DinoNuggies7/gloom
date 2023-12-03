@@ -22,7 +22,7 @@ void Item__Pickaxe__USE(Item* this, ...) {
 	}
 }
 
-void __attribute__((constructor)) InitPickaxe() {
-	itemFunc.INIT_[ITEM_PICKAXE] = &Item__Pickaxe__INIT;
-	itemFunc.USE_[ITEM_PICKAXE] = &Item__Pickaxe__USE;
+void __attribute__((constructor)) SetRegistry() {
+	ItemVtableRegistry.INIT_[ITEM_PICKAXE] = &Item__Pickaxe__INIT;
+	ItemVtableRegistry.USE_[ITEM_PICKAXE] = &Item__Pickaxe__USE;
 }

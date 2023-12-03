@@ -1,15 +1,15 @@
 #include "object.h"
 
-// True objFunc declaration
-struct ObjectFunction objFunc;
+// True ObjectVtableRegistry instance
+struct ObjectVtableRegistry ObjectVtableRegistry;
 
 // Function for Spawning Objects
 Object CreateObject(int type) {
 	Object object;
 	ObjectGlobalINIT(&object);
 	if (type > OBJECT_NONE && type < OBJECT_TYPES) {
-		object.init = objFunc.INIT_[type];
-		object.update = objFunc.UPDATE_[type];
+		object.init = ObjectVtableRegistry.INIT_[type];
+		object.update = ObjectVtableRegistry.UPDATE_[type];
 		object.type = type;
 		object.init(&object);
 	}

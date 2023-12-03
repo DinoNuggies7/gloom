@@ -1,15 +1,15 @@
 #include "item.h"
 
-// True itemFunc declaration
-struct ItemFunction itemFunc;
+// True ItemVtableRegistry instance
+struct ItemVtableRegistry ItemVtableRegistry;
 
 // Function for Spawning Items
 Item CreateItem(int type) {
 	Item item;
 	ItemGlobalINIT(&item);
 	if (type > ITEM_NONE && type < ITEM_TYPES) {
-		item.init = itemFunc.INIT_[type];
-		item.use = itemFunc.USE_[type];
+		item.init = ItemVtableRegistry.INIT_[type];
+		item.use = ItemVtableRegistry.USE_[type];
 		item.type = type;
 		item.init(&item);
 	}

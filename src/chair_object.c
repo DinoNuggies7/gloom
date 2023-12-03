@@ -10,7 +10,7 @@ void Chair_Object_UPDATE(Object* this, ...) {
 
 }
 
-void __attribute__((constructor)) InitChair() {
-	objFunc.INIT_[OBJECT_CHAIR] = &Chair_Object_INIT;
-	objFunc.UPDATE_[OBJECT_CHAIR] = &Chair_Object_UPDATE;
+void __attribute__((constructor)) SetRegistry() {
+	ObjectVtableRegistry.INIT_[OBJECT_CHAIR] = &Chair_Object_INIT;
+	ObjectVtableRegistry.UPDATE_[OBJECT_CHAIR] = &Chair_Object_UPDATE;
 }

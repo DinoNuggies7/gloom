@@ -39,9 +39,6 @@ int main(int argc, char** argv) {
 	float lastTicks;
 	float dt;
 
-	// ItemFunction itemFunc;
-	// SetItemFunctions(&itemFunc);
-
 	Player player;
 	Player__INIT(&player);
 

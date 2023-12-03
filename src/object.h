@@ -24,10 +24,10 @@ enum ObjectType {
 
 	OBJECT_TYPES,
 };
-extern struct ObjectFunction {
+extern struct ObjectVtableRegistry {
 	void (*INIT_[OBJECT_TYPES])(Object* object, ...);
 	void (*UPDATE_[OBJECT_TYPES])(Object* object, ...);
-} objFunc;
+} ObjectVtableRegistry;
 
 Object CreateObject(int type);
 void DestroyObject(Object* object);

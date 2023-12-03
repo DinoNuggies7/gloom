@@ -53,7 +53,7 @@ void Derk_Object_UPDATE(Object* this, ...) {
 	}
 }
 
-void __attribute__((constructor)) InitDerk() {
-	objFunc.INIT_[OBJECT_DERK] = &Derk_Object_INIT;
-	objFunc.UPDATE_[OBJECT_DERK] = &Derk_Object_UPDATE;
+void __attribute__((constructor)) SetRegistry() {
+	ObjectVtableRegistry.INIT_[OBJECT_DERK] = &Derk_Object_INIT;
+	ObjectVtableRegistry.UPDATE_[OBJECT_DERK] = &Derk_Object_UPDATE;
 }

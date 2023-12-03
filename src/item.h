@@ -30,10 +30,10 @@ enum ItemType {
 
 	ITEM_TYPES,
 };
-extern struct ItemFunction {
+extern struct ItemVtableRegistry {
 	void (*INIT_[ITEM_TYPES])(Item* item, ...);
 	void (*USE_[ITEM_TYPES])(Item* item, ...);
-} itemFunc;
+} ItemVtableRegistry;
 
 Item CreateItem(int type);
 

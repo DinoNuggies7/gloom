@@ -127,7 +127,6 @@ int main(int argc, char** argv) {
 	SDL_DestroyWindow(window);
 	IMG_Quit();
 	SDL_Quit();
-	pthread_exit(NULL);
 	return 0;
 }
 

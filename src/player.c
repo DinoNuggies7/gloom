@@ -241,8 +241,10 @@ void handleItems(Player* this, Map* map, float dt) {
 
 	// Use/Equip Items
 	if (this->leftclick) {
-		if (!this->choosing)
-			this->inventory[this->equip[LEFT]].use(&this->inventory[this->equip[LEFT]], this, map);
+		if (!this->choosing) {
+			if (this->inventory[this->equip[LEFT]].type > ITEM_NONE && this->inventory[this->equip[LEFT]].type < ITEM_TYPES)
+				this->inventory[this->equip[LEFT]].use(&this->inventory[this->equip[LEFT]], this, map);
+		}
 		else {
 			if (this->select != this->equip[RIGHT]) {
 				this->equip[LEFT] = this->select;
@@ -256,8 +258,10 @@ void handleItems(Player* this, Map* map, float dt) {
 		}
 	}
 	if (this->rightclick) {
-		if (!this->choosing)
-			this->inventory[this->equip[RIGHT]].use(&this->inventory[this->equip[RIGHT]], this, map);
+		if (!this->choosing) {
+			if (this->inventory[this->equip[RIGHT]].type > ITEM_NONE && this->inventory[this->equip[RIGHT]].type < ITEM_TYPES)
+				this->inventory[this->equip[RIGHT]].use(&this->inventory[this->equip[RIGHT]], this, map);
+		}
 		else {
 			if (this->select != this->equip[LEFT]) {
 				this->equip[RIGHT] = this->select;

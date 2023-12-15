@@ -5,7 +5,6 @@
 #include "player.h"
 
 #include <SDL2/SDL.h>
-#include <pthread.h>
 
 SDL_Window* window;
 SDL_Renderer* renderer;

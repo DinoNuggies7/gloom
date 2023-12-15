@@ -62,42 +62,41 @@ void load(Player* this, FILE* file) {
 
 void Player__INIT(Player* this) {
 	this->quit = false;
-	this->maxSpeed = 5.f;
-	this->speed = 5.f;
-	this->minSpeed = 5.f;
-	this->friction = 5.f;
-	this->hitbox = 0.3f;
+	this->walkSpeed = 2.5;
+	this->runSpeed = 1;
+	this->maxStamina = 5;
+	this->stamina = this->maxStamina;
+	this->friction = 1;
+	this->minSpeed = 1;
+	this->maxSpeed = this->walkSpeed;
+	this->hitbox = 0.3;
 	this->select = 0;
 	this->selectTimer = 0;
 	this->choosing = false;
 	this->forward = this->backword = this->left = this->right = false;
+	this->sprint = false, this->tired = false;
 	this->lookup = this->lookdown = this->lookleft = this->lookright = false;
 	this->leftclick = this->rightclick = false;
-	this->lookspeed = 1.5f;
-	this->dir.x = 1.0f;
-	this->dir.y = 0.0f;
-	this->plane.x = 0.0f;
-	this->plane.y = 1.0f;
+	this->lookspeed = 1.5;
+	this->dir.x = 1.0;
+	this->dir.y = 0.0;
+	this->plane.x = 0.0;
+	this->plane.y = 1.0;
 
-	this->selectTexture = IMG_Load("res/select.png");
+	this->hudbarTexture = IMG_Load("res/item/hudbar.png");
+	this->selectTexture = IMG_Load("res/item/select.png");
 
 	FILE* file = fopen(CONFIG_PATH, "r");
 	if (file == NULL) {
 		printf("couldn't find config file, creating one\n");
 
 		// Default values
-		this->map = "res/test.txt";
+		this->map = "res/map/level0.txt";
 		this->sensitivity = 0.5;
 		this->equip[LEFT] = 0;
-		this->equip[RIGHT] = 2;
-		this->inventory[0] = CreateItem(ITEM_PICKAXE);
-		this->inventory[1] = CreateItem(ITEM_NAGANT);
-		this->inventory[2] = CreateItem(ITEM_NAGANT);
-		this->inventory[3] = CreateItem(ITEM_BRICK);
-		this->inventory[4] = CreateItem(ITEM_STONE);
-		this->inventory[5] = CreateItem(ITEM_DARK);
-		this->inventory[6] = CreateItem(ITEM_RED);
-		this->inventory[7] = CreateItem(ITEM_PURPLE);
+		this->equip[RIGHT] = 1;
+		for (int i = 0; i < SLOTS; i++)
+			this->inventory[i] = CreateItem(ITEM_NONE);
 
 		save(this);
 	}
@@ -126,8 +125,8 @@ void Player__UPDATE(Player* this, Map* map, float dt) {
 void camera(Player* this, float dt) {
 	// Choose method of moving camera
 	Vec2F rotSpeed;
-	rotSpeed.x = 0.0f;
-	rotSpeed.y = 0.0f;
+	rotSpeed.x = 0.0;
+	rotSpeed.y = 0.0;
 	if (this->lookleft)
 		rotSpeed.x = -this->lookspeed * dt;
 	else if (this->lookright)
@@ -154,6 +153,21 @@ void camera(Player* this, float dt) {
 }
 
 void movement(Player* this, float dt) {
+	// Deplete stamina when sprinting
+	bool isMoving = this->forward || this->backword || this->left || this->right;
+	if (this->sprint && isMoving && !this->tired)
+		this->stamina -= 1 * dt;
+	else
+		this->stamina += 1 * dt;
+	if (this->stamina > this->maxStamina) {
+		this->stamina = this->maxStamina;
+		this->tired = false;
+	}
+	if (this->stamina < 0) {
+		this->stamina = 0;
+		this->tired = true;
+	}
+
 	// Applying friction to velocity
 	if (this->vel.x < -this->minSpeed)
 		this->vel.x += this->friction;
@@ -171,32 +185,32 @@ void movement(Player* this, float dt) {
 
 	// Accelerate when pressing the movement keys
 	if (this->forward) {
-		this->vel.x += this->dir.x * this->speed;
-		this->vel.y += this->dir.y * this->speed;
+		this->vel.x += this->dir.x * this->walkSpeed;
+		this->vel.y += this->dir.y * this->walkSpeed;
 	}
 	else if (this->backword) {
-		this->vel.x -= this->dir.x * this->speed;
-		this->vel.y -= this->dir.y * this->speed;
+		this->vel.x -= this->dir.x * this->walkSpeed;
+		this->vel.y -= this->dir.y * this->walkSpeed;
 	}
 	if (this->left) {
-		this->vel.x += this->dir.y * this->speed;
-		this->vel.y -= this->dir.x * this->speed;
+		this->vel.x += this->dir.y * this->walkSpeed;
+		this->vel.y -= this->dir.x * this->walkSpeed;
 	}
 	else if (this->right) {
-		this->vel.x -= this->dir.y * this->speed;
-		this->vel.y += this->dir.x * this->speed;
+		this->vel.x -= this->dir.y * this->walkSpeed;
+		this->vel.y += this->dir.x * this->walkSpeed;
 	}
 
 	// Keeping velocity under maximum
-	if (this->vel.x > this->maxSpeed)
-		this->vel.x = this->maxSpeed;
-	if (this->vel.x < -this->maxSpeed)
-		this->vel.x = -this->maxSpeed;
+	if (this->vel.x > this->maxSpeed + (this->sprint && !this->tired ? this->runSpeed : 0))
+		this->vel.x = this->maxSpeed + (this->sprint && !this->tired ? this->runSpeed : 0);
+	if (this->vel.x < -this->maxSpeed - (this->sprint && !this->tired ? this->runSpeed : 0))
+		this->vel.x = -this->maxSpeed - (this->sprint && !this->tired ? this->runSpeed : 0);
 
-	if (this->vel.y > this->maxSpeed)
-		this->vel.y = this->maxSpeed;
-	if (this->vel.y < -this->maxSpeed)
-		this->vel.y = -this->maxSpeed;
+	if (this->vel.y > this->maxSpeed + (this->sprint && !this->tired ? this->runSpeed : 0))
+		this->vel.y = this->maxSpeed + (this->sprint && !this->tired ? this->runSpeed : 0);
+	if (this->vel.y < -this->maxSpeed - (this->sprint && !this->tired ? this->runSpeed : 0))
+		this->vel.y = -this->maxSpeed - (this->sprint && !this->tired ? this->runSpeed : 0);
 }
 
 void collision(Player* this, Map map, float dt) {

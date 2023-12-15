@@ -54,6 +54,9 @@ void handleInput(SDL_Event* event, Player* player) {
 				case SDL_SCANCODE_D:
 					player->right = true;
 					break;
+				case SDL_SCANCODE_LSHIFT:
+					player->sprint = true;
+					break;
 				case SDL_SCANCODE_UP:
 					player->lookup = true;
 				case SDL_SCANCODE_DOWN:
@@ -79,6 +82,9 @@ void handleInput(SDL_Event* event, Player* player) {
 					break;
 				case SDL_SCANCODE_D:
 					player->right = false;
+					break;
+				case SDL_SCANCODE_LSHIFT:
+					player->sprint = false;
 					break;
 				case SDL_SCANCODE_UP:
 					player->lookup = false;

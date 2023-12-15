@@ -21,9 +21,10 @@ typedef struct {
 	int equip[2], select;
 	Item inventory[SLOTS];
 	int scroll;
-	bool forward, backword, left, right, lookup, lookdown, lookleft, lookright, leftclick, rightclick, choosing;
-	float speed, friction, maxSpeed, minSpeed, hitbox, xrel, lookspeed, sensitivity, selectTimer;
+	bool forward, backword, left, right, sprint, tired, lookup, lookdown, lookleft, lookright, leftclick, rightclick, choosing;
+	float walkSpeed, runSpeed, stamina, maxStamina, friction, maxSpeed, minSpeed, hitbox, xrel, lookspeed, sensitivity, selectTimer;
 	Vec2F pos, vel, dir, plane;
+	SDL_Surface* hudbarTexture;
 	SDL_Surface* selectTexture;
 } Player;
 

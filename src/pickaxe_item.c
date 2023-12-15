@@ -2,8 +2,8 @@
 #include "player.h"
 
 void Item__Pickaxe__INIT(Item* this, ...) {
-	this->texture = IMG_Load("res/pickaxe.png");
-	this->itemTexture = IMG_Load("res/pickaxe_item.png");
+	this->texture = IMG_Load("res/item/wield/1.png");
+	this->itemTexture = IMG_Load("res/item/icon/1.png");
 	this->frameRect.w = this->texture->w; this->frameRect.h = this->texture->h;
 	this->offset.y = 0.04;
 }

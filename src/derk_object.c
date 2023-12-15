@@ -3,10 +3,10 @@
 // Derk Object
 void Derk_Object_INIT(Object* this, ...) {
 	printf("<Gaylord has joined the game>\n");
-	this->speed = 1.5;
+	this->speed = 3.5;
 	this->hitbox = 0.3;
 	this->hp = this->maxHealth = 8;
-	this->texture = IMG_Load("res/derk.png");
+	this->texture = IMG_Load("res/object/derk.png");
 }
 
 void Derk_Object_UPDATE(Object* this, ...) {
@@ -42,6 +42,22 @@ void Derk_Object_UPDATE(Object* this, ...) {
 		if (tile[i].y > TILE_COLLISION_START && tile[i].y < TILE_COLLISION_END)
 			this->vel.y = 0;
 	}
+
+	// Go around walls
+	// if (this->vel.x == 0) {
+	// 	if (this->vel.y > 0)
+	// 		this->vel.x = -this->vel.y;
+	// 	else
+	// 		this->vel.x = this->vel.y;
+	// 	this->vel.y = 0;
+	// }
+	// if (this->vel.y == 0) {
+	// 	if (this->vel.x > 0)
+	// 		this->vel.y = -this->vel.x;
+	// 	else
+	// 		this->vel.y = this->vel.x;
+	// 	this->vel.x = 0;
+	// }
 
 	// Quit game when player is gotted (should be jumpscare later)
 	if (this->pos.x + this->hitbox > player->pos.x - player->hitbox

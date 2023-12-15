@@ -5,6 +5,7 @@
 #include "player.h"
 
 #include <SDL2/SDL.h>
+#include <pthread.h>
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -16,8 +17,8 @@ int main(int argc, char** argv) {
 	SDL_DisplayMode display;
 	SDL_GetCurrentDisplayMode(0, &display);
 
-	window = SDL_CreateWindow("GLOOM", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display.w, display.h, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	SDL_Surface* icon = IMG_Load("res/derrickfull.png");
+	window = SDL_CreateWindow("GLOOM.EXE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display.w, display.h, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_Surface* icon = IMG_Load("res/icon.png");
 	SDL_SetWindowIcon(window, icon);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -30,10 +31,15 @@ int main(int argc, char** argv) {
 	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 	SDL_Surface* texture[TEXTURES];
-	texture[TEXTURE_HUDBAR]	= IMG_Load("res/hudbar.png");
-	texture[TEXTURE_BRICK]	= IMG_Load("res/brick.png");
-	texture[TEXTURE_STONE]	= IMG_Load("res/stone.png");
-	texture[TEXTURE_DARK]	= IMG_Load("res/dark.png");
+	for (int i = 0; i < TEXTURES; i++) {
+		char texturePath[15] = "res/wall/";
+		char textureNum[2];
+		sprintf(textureNum, "%d", i);
+		strncat(texturePath, textureNum, 2);
+		strcat(texturePath, ".png");
+
+		texture[i] = IMG_Load(texturePath);
+	}
 
 	float ticks = SDL_GetTicks();
 	float lastTicks;
@@ -49,7 +55,11 @@ int main(int argc, char** argv) {
 	Object object[objects];
 
 	for (int i = 0; i < objects; i++) {
-		object[i] = CreateObject(map.spawn[i].z);
+		if (map.spawn[i].z < 0) {
+			object[i] = CreateObject(OBJECT_ITEM, abs(map.spawn[i].z));
+		}
+		else
+			object[i] = CreateObject(map.spawn[i].z);
 		object[i].pos.x = map.spawn[i].x + 0.5;
 		object[i].pos.y = map.spawn[i].y + 0.5;
 	}
@@ -75,7 +85,7 @@ int main(int argc, char** argv) {
 
 		lastTicks = ticks;
 		ticks = SDL_GetTicks();
-		dt = (ticks - lastTicks) / 1000.f;
+		dt = (ticks - lastTicks) / 1000;
 
 		Player__UPDATE(&player, &map, dt);
 
@@ -87,13 +97,13 @@ int main(int argc, char** argv) {
 				ObjectGlobalUPDATE(&object[i], player, map, dt);
 			}
 			else // Remove Objects
-				DestroyObject(&object[i]);			
+				DestroyObject(&object[i]);
 		}
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
 		SDL_RenderClear(renderer);
 
-		drawBackground(renderer, view);
+		drawBackground(renderer, texture, view, player);
 		drawForeground(renderer, texture, view, objects, object, player, map);
 		drawHUD(renderer, texture, view, player);
 
@@ -103,7 +113,6 @@ int main(int argc, char** argv) {
 	save(&player);
 
 	SDL_FreeSurface(icon);
-	SDL_FreeSurface(player.selectTexture);
 	for (int i = 0; i < SLOTS; i++) {
 		SDL_FreeSurface(player.inventory[i].texture);
 		if (player.inventory[i].texture != player.inventory[i].itemTexture)
@@ -119,6 +128,7 @@ int main(int argc, char** argv) {
 	SDL_DestroyWindow(window);
 	IMG_Quit();
 	SDL_Quit();
+	pthread_exit(NULL);
 	return 0;
 }
 

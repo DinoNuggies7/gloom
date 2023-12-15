@@ -10,7 +10,7 @@ typedef struct Object {
 	void (*update)(struct Object*, ...);
 	bool destroy;
 	int type, hp, maxHealth;
-	float speed, hitbox;
+	float speed, hitbox, scale;
 	Vec2F pos, vel, dir;
 	SDL_Surface* texture;
 	SDL_FRect rect;
@@ -19,6 +19,7 @@ enum ObjectType {
 	OBJECT_NULL = -1,
 
 	OBJECT_NONE,
+	OBJECT_ITEM,
 	OBJECT_DERK,
 	OBJECT_CHAIR,
 
@@ -29,7 +30,7 @@ extern struct ObjectVtableRegistry {
 	void (*UPDATE_[OBJECT_TYPES])(Object* object, ...);
 } ObjectVtableRegistry;
 
-Object CreateObject(int type);
+Object CreateObject(int type, ...);
 void DestroyObject(Object* object);
 
 void ObjectGlobalINIT(Object* object);

@@ -4,14 +4,18 @@
 struct ObjectVtableRegistry ObjectVtableRegistry;
 
 // Function for Spawning Objects
-Object CreateObject(int type) {
+Object CreateObject(int type, ...) {
+	va_list list;
+	va_start(list, type);
+	int arg = va_arg(list, int);
+
 	Object object;
 	ObjectGlobalINIT(&object);
 	if (type > OBJECT_NONE && type < OBJECT_TYPES) {
 		object.init = ObjectVtableRegistry.INIT_[type];
 		object.update = ObjectVtableRegistry.UPDATE_[type];
 		object.type = type;
-		object.init(&object);
+		object.init(&object, arg);
 	}
 	return object;
 }
@@ -29,8 +33,9 @@ void ObjectGlobalINIT(Object* this) {
 	printf("Spawned Object\n");
 	this->destroy = false;
 	this->type = OBJECT_NONE;
-	this->hitbox = 0.5f;
+	this->hitbox = 0.5;
 	this->speed = 0;
+	this->scale = 1;
 	this->hp = this->maxHealth = 1;
 	this->pos.x = this->pos.y = 0;
 	this->vel.x = this->vel.y = 0;

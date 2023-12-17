@@ -42,6 +42,7 @@ gloom
 *.hex
 
 # Debug files
+*.stackdump
 *.dSYM/
 *.su
 *.idb

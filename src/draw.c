@@ -89,9 +89,12 @@ void drawBackground(SDL_Surface* screen, SDL_Surface** texture, SDL_Rect view, P
 			setPixel(screen, x, y, SDL_MapRGB(screen->format, floorColor.r, floorColor.g, floorColor.b));
 
 			// Ceiling
-			// DRAW AS BLACK RN CUZ I CAN'T FIND A GOOD CEILING TEXTURE
 			SDL_Color ceilingColor;
-			ceilingColor.r = ceilingColor.g = ceilingColor.b = 0;
+			SDL_GetRGBA(getPixel(texture[ceilingTexture], tx, ty), texture[ceilingTexture]->format, &ceilingColor.r, &ceilingColor.g, &ceilingColor.b, &ceilingColor.a);
+			// shade according to distance from player
+			if (ceilingColor.r - shadeStrength < 1) ceilingColor.r = 0; else ceilingColor.r -= shadeStrength;
+			if (ceilingColor.g - shadeStrength < 1) ceilingColor.g = 0; else ceilingColor.g -= shadeStrength;
+			if (ceilingColor.b - shadeStrength < 1) ceilingColor.b = 0; else ceilingColor.b -= shadeStrength;
 			setPixel(screen, x, view.h - y - 1, SDL_MapRGB(screen->format, ceilingColor.r, ceilingColor.g, ceilingColor.b));
 		}
 	}

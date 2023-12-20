@@ -4,10 +4,10 @@
 #include "object.h"
 #include "player.h"
 
-#include <SDL2/SDL.h>
-
 SDL_Window* window;
-SDL_Renderer* renderer;
+SDL_Surface* windowSurface;
+SDL_Surface* screen;
+// SDL_Renderer* renderer;
 
 int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -19,15 +19,13 @@ int main(int argc, char** argv) {
 	window = SDL_CreateWindow("GLOOM.EXE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display.w, display.h, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	SDL_Surface* icon = IMG_Load("res/icon.png");
 	SDL_SetWindowIcon(window, icon);
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	windowSurface = SDL_GetWindowSurface(window);
 
-	SDL_Rect view = {0, 0, 640, 336};
-	SDL_RenderSetScale(renderer, (float)display.w / view.w, (float)display.h / (view.h + 24));
-
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 0);
+	SDL_Rect windowSize = {0, 0, display.w, display.h};
+	SDL_Rect view = {0, 0, 640, 360};
+	screen = SDL_CreateRGBSurface(0, view.w, view.h, 32, 0, 0, 0, 0);
 
 	SDL_SetRelativeMouseMode(true);
-	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 	SDL_Surface* texture[TEXTURES];
 	for (int i = 0; i < TEXTURES; i++) {
@@ -92,21 +90,21 @@ int main(int argc, char** argv) {
 			// Update Objects
 			if (!object[i].destroy) {
 				if (object[i].type > OBJECT_NONE && object[i].type < OBJECT_TYPES)
-					object[i].update(&object[i], dt, &player, map, view);
-				ObjectGlobalUPDATE(&object[i], player, map, dt);
+					object[i].update(&object[i], dt, view, &player, map);
+				ObjectGlobalUPDATE(&object[i], dt, player, map);
 			}
 			else // Remove Objects
 				DestroyObject(&object[i]);
 		}
 
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-		SDL_RenderClear(renderer);
+		SDL_FillRect(screen, &view, SDL_MapRGB(screen->format, 0, 0, 0));
 
-		drawBackground(renderer, texture, view, player);
-		drawForeground(renderer, texture, view, objects, object, player, map);
-		drawHUD(renderer, texture, view, player);
+		drawBackground(screen, texture, view, player);
+		drawForeground(screen, texture, view, player, object, objects, map);
+		// drawHUD(screen, view, player);
 
-		SDL_RenderPresent(renderer);
+		SDL_BlitScaled(screen, NULL, windowSurface, &windowSize);
+		SDL_UpdateWindowSurface(window);
 	}
 	
 	save(&player);
@@ -123,7 +121,8 @@ int main(int argc, char** argv) {
 	for (int i = 0; i < TEXTURES; i++) {
 		SDL_FreeSurface(texture[i]);
 	}
-	SDL_DestroyRenderer(renderer);
+	SDL_FreeSurface(screen);
+	SDL_FreeSurface(windowSurface);
 	SDL_DestroyWindow(window);
 	IMG_Quit();
 	SDL_Quit();

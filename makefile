@@ -1,8 +1,7 @@
 # Define the compiler and compilation flags
-CC = gcc
 CCACHE = ccache
 CFLAGS = -g
-LIBS = -lm -lpthread -lSDL2 -lSDL2_image
+LIBS = -lm -lSDL2 -lSDL2_image
 
 # Directories
 SRC_DIR = src
@@ -15,7 +14,6 @@ OBJ_FILES = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC_FILES))
 # The default target is to build all object files
 all: clean $(OBJ_FILES)
 	$(CCACHE) $(CC) $(BUILD_DIR)/*.o $(LIBS) -o gloom
-	./gloom
 
 # Rule to compile a .c file to a .o file
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c

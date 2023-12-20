@@ -34,6 +34,6 @@ Object CreateObject(int type, ...);
 void DestroyObject(Object* object);
 
 void ObjectGlobalINIT(Object* object);
-void ObjectGlobalUPDATE(Object* object, Player player, Map map, float dt);
+void ObjectGlobalUPDATE(Object* object, float dt, Player player, Map map);
 
 #endif

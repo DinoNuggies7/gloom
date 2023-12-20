@@ -14,8 +14,8 @@ void Item__Nagant__INIT(Item* this, ...) {
 	this->srcrect = malloc(sizeof(SDL_Rect) * this->frames);
 	this->texture = IMG_Load("res/item/wield/2.png");
 	this->itemTexture = IMG_Load("res/item/icon/2.png");
-	this->offset.x = -0.1;
-	this->offset.y = -0.08;
+	// this->offset.x = -0.1; TEMPORARY MAYBE
+	// this->offset.y = -0.08;
 
 	for (int j = 0; j < 3; j++) {
 		for (int i = 0; i < 3; i++) {

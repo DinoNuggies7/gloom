@@ -5,7 +5,7 @@ void Item__Pickaxe__INIT(Item* this, ...) {
 	this->texture = IMG_Load("res/item/wield/1.png");
 	this->itemTexture = IMG_Load("res/item/icon/1.png");
 	this->frameRect.w = this->texture->w; this->frameRect.h = this->texture->h;
-	this->offset.y = 0.04;
+	// this->offset.y = 0.04; TEMPORARY MAYBE ASWELL
 }
 
 void Item__Pickaxe__USE(Item* this, ...) {

@@ -44,7 +44,7 @@ void ObjectGlobalINIT(Object* this) {
 }
 
 // Global Object Update
-void ObjectGlobalUPDATE(Object* this, Player player, Map map, float dt) {
+void ObjectGlobalUPDATE(Object* this, float dt, Player player, Map map) {
 	this->pos.x += this->vel.x * dt;
 	this->pos.y += this->vel.y * dt;
 

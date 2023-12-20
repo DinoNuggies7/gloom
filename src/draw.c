@@ -29,79 +29,75 @@ Uint32 getPixel(SDL_Surface* surface, int x, int y) {
 	}
 }
 
-void drawBackground(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view, Player player) {
-	// SDL_Color floorColor = {40, 40, 40, 255};
-	// for (int i = 0; i < view.h / 2; i++) {
-	// 	SDL_SetRenderDrawColor(renderer, floorColor.r - (i / 4.4), floorColor.g - (i / 4.4), floorColor.b - (i / 4.4), floorColor.a);	
-	// 	SDL_RenderDrawLine(renderer, 0, i, view.w, i);
-	// 	SDL_SetRenderDrawColor(renderer, floorColor.r - (i / 4.4), floorColor.g - (i / 4.4), floorColor.b - (i / 4.4), floorColor.a);	
-	// 	SDL_RenderDrawLine(renderer, 0, -i + view.h, view.w, -i + view.h);
-	// }
+void setPixel(SDL_Surface* surface, int x, int y, Uint32 pixel) {
+	Uint32* const target_pixel = (Uint32*) ((Uint8*) surface->pixels + y * surface->pitch + x * surface->format->BytesPerPixel);
+	*target_pixel = pixel;
+}
 
-	//FLOOR CASTING
-	for(int y = 0; y < view.h; y++) {
-	  // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-	  float rayDirX0 = player.dir.x - player.plane.x;
-	  float rayDirY0 = player.dir.y - player.plane.y;
-	  float rayDirX1 = player.dir.x + player.plane.x;
-	  float rayDirY1 = player.dir.y + player.plane.y;
+void drawBackground(SDL_Surface* screen, SDL_Surface** texture, SDL_Rect view, Player player) {
+	// Floor Casting
+	for (int y = 0; y < view.h; y++) {
+		// rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+		float rayDirX0 = player.dir.x - player.plane.x;
+		float rayDirY0 = player.dir.y - player.plane.y;
+		float rayDirX1 = player.dir.x + player.plane.x;
+		float rayDirY1 = player.dir.y + player.plane.y;
 
-	  // Current y position compared to the center of the screen (the horizon)
-	  int p = y - view.h / 2;
+		// Current y position compared to the center of the screen (the horizon)
+		int p = y - view.h / 2;
 
-	  // Vertical position of the camera.
-	  float posZ = 0.5 * view.h;
+		// Vertical position of the camera.
+		float posZ = 0.5 * view.h;
 
-	  // Horizontal distance from the camera to the floor for the current row.
-	  // 0.5 is the z position exactly in the middle between floor and ceiling.
-	  float rowDistance = posZ / p;
+		// Horizontal distance from the camera to the floor for the current row.
+		// 0.5 is the z position exactly in the middle between floor and ceiling.
+		float rowDistance = posZ / p;
 
-	  // calculate the real world step vector we have to add for each x (parallel to camera plane)
-	  // adding step by step avoids multiplications with a weight in the inner loop
-	  float floorStepX = rowDistance * (rayDirX1 - rayDirX0) / view.w;
-	  float floorStepY = rowDistance * (rayDirY1 - rayDirY0) / view.w;
+		// calculate the real world step vector we have to add for each x (parallel to camera plane)
+		// adding step by step avoids multiplications with a weight in the inner loop
+		float floorStepX = rowDistance * (rayDirX1 - rayDirX0) / view.w;
+		float floorStepY = rowDistance * (rayDirY1 - rayDirY0) / view.w;
 
-	  // real world coordinates of the leftmost column. This will be updated as we step to the right.
-	  float floorX = player.pos.x + rowDistance * rayDirX0;
-	  float floorY = player.pos.x + rowDistance * rayDirY0;
+		// real world coordinates of the leftmost column. This will be updated as we step to the right.
+		float floorX = player.pos.x + rowDistance * rayDirX0;
+		float floorY = player.pos.y + rowDistance * rayDirY0;
 
-	  for(int x = 0; x < view.w; ++x)
-	  {
-		// the cell coord is simply got from the integer parts of floorX and floorY
-		int cellX = (int)(floorX);
-		int cellY = (int)(floorY);
+		for(int x = 0; x < view.w; ++x) {
+			// the cell coord is simply got from the integer parts of floorX and floorY
+			int cellX = (int)(floorX);
+			int cellY = (int)(floorY);
 
-		// get the texture coordinate from the fractional part
-		int tx = (int)(64 * (floorX - cellX)) & (64 - 1);
-		int ty = (int)(64 * (floorY - cellY)) & (64 - 1);
+			// get the texture coordinate from the fractional part
+			int tx = (int)(64 * (floorX - cellX)) & (64 - 1);
+			int ty = (int)(64 * (floorY - cellY)) & (64 - 1);
 
-		floorX += floorStepX;
-		floorY += floorStepY;
+			floorX += floorStepX;
+			floorY += floorStepY;
 
-		// choose texture and draw the pixel
-		int floorTexture = TEXTURE_BACKROOM;
-		int ceilingTexture = TEXTURE_BACKROOM;
-		SDL_Color color;
+			// choose texture and draw the pixel
+			int floorTexture = TEXTURE_CARPET;
+			int ceilingTexture = TEXTURE_CEILING;
 
-		// floor
-		// color = [texture[TEXTURE_BACKROOM]->w * ty + tx]; // WRONG
-		// color = (color >> 1) & 8355711; // make a bit darker
-		// buffer[y][x] = color;
-		SDL_GetRGB(getPixel(texture[floorTexture], tx, ty), texture[floorTexture]->format, &color.r, &color.g, &color.b);
-		// color.r /= 3;
-		// color.g /= 3;
-		// color.b /= 3;
-		SDL_RenderDrawPoint(renderer, x, y);
+			// Floor
+			SDL_Color floorColor;
+			SDL_GetRGBA(getPixel(texture[floorTexture], tx, ty), texture[floorTexture]->format, &floorColor.r, &floorColor.g, &floorColor.b, &floorColor.a);
+			// shade according to distance from player
+			int shadeStrength = rowDistance * SHADE_STRENGTH;
+			if (floorColor.r - shadeStrength < 1) floorColor.r = 0; else floorColor.r -= shadeStrength;
+			if (floorColor.g - shadeStrength < 1) floorColor.g = 0; else floorColor.g -= shadeStrength;
+			if (floorColor.b - shadeStrength < 1) floorColor.b = 0; else floorColor.b -= shadeStrength;
+			setPixel(screen, x, y, SDL_MapRGB(screen->format, floorColor.r, floorColor.g, floorColor.b));
 
-		//ceiling (symmetrical, at view.h - y - 1 instead of y)
-		// color = texture[ceilingTexture][texture[TEXTURE_BACKROOM]->w * ty + tx]; // WRONG
-		// color = (color >> 1) & 8355711; // make a bit darker
-		// buffer[view.h - y - 1][x] = color;
-	  }
+			// Ceiling
+			// DRAW AS BLACK RN CUZ I CAN'T FIND A GOOD CEILING TEXTURE
+			SDL_Color ceilingColor;
+			ceilingColor.r = ceilingColor.g = ceilingColor.b = 0;
+			setPixel(screen, x, view.h - y - 1, SDL_MapRGB(screen->format, ceilingColor.r, ceilingColor.g, ceilingColor.b));
+		}
 	}
 }
 
-void drawForeground(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view, int objects, Object object[objects], Player player, Map map) {
+void drawForeground(SDL_Surface* screen, SDL_Surface** texture, SDL_Rect view, Player player, Object* object, int objects, Map map) {
 	// Draw Objects
 	int drawOrder[objects];
 	for (int i = 0; i < objects; i++)
@@ -179,8 +175,7 @@ void drawForeground(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view
 								color.b = 0;
 							else
 								color.b -= shadeStrength;
-							SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-							SDL_RenderDrawPoint(renderer, i, j);
+							setPixel(screen, i, j, SDL_MapRGB(screen->format, color.r, color.g, color.b));
 							objectMask[i][j].x = obj->pos.x;
 							objectMask[i][j].y = obj->pos.y;
 						}
@@ -283,27 +278,6 @@ void drawForeground(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view
 			case TILE_BACKROOM:
 				texNum = TEXTURE_BACKROOM;
 				break;
-			// case TILE_RED:
-			// 	color.r = 255;
-			// 	color.g = 0;
-			// 	color.b = 0;
-			// 	break;
-			// case TILE_GREEN:
-			// 	color.r = 0;
-			// 	color.g = 80;
-			// 	color.b = 0;
-			// 	break;
-			// case TILE_PURPLE:
-			// 	color.r = 150;
-			// 	color.g = 0;
-			// 	color.b = 150;
-			// 	break;
-			// case TILE_STONE:
-			// 	texNum = TEXTURE_STONE;
-			// 	break;
-			// case TILE_DARK:
-			// 	texNum = TEXTURE_DARK;
-			// 	break;
 			default:
 				color.r = 0;
 				color.g = 0;
@@ -312,7 +286,6 @@ void drawForeground(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view
 		}
 
 		// Draw
-		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 		float invDet = 1 / (player.plane.x * player.dir.y - player.dir.x * player.plane.y);
 		for (int i = drawStart; i < drawEnd; i++) {
 			bool draw = true;
@@ -359,14 +332,14 @@ void drawForeground(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view
 						color.b /= 2; 
 					}
 				}
-				SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-				SDL_RenderDrawPoint(renderer, x, i);
+				setPixel(screen, x, i, SDL_MapRGB(screen->format, color.r, color.g, color.b));
 			}
 		}
 	}
 }
 
-void drawHUD(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view, Player player) {
+// WORKING ON THIS RN
+void drawHUD(SDL_Surface* screen, SDL_Rect view, Player player) {
 	// Equipped Items
 	Item* wieldedItem[2] = {&player.inventory[player.equip[LEFT]], &player.inventory[player.equip[RIGHT]]};
 	SDL_Rect handRect[2] = {
@@ -384,30 +357,31 @@ void drawHUD(SDL_Renderer* renderer, SDL_Surface** texture, SDL_Rect view, Playe
 		}
 	};
 	for (int i = 0; i < 2; i++) {
-		SDL_Texture* wieldTexture = SDL_CreateTextureFromSurface(renderer, wieldedItem[i]->texture);
-		SDL_RenderCopyEx(renderer, wieldTexture, &wieldedItem[i]->srcrect[(int)wieldedItem[i]->frame], &handRect[i], 0, NULL, i == 0 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
-		SDL_DestroyTexture(wieldTexture);
+		SDL_BlitScaled(wieldedItem[i]->texture, &wieldedItem[i]->srcrect[(int)wieldedItem[i]->frame], screen, &handRect[i]);
 	}
 
 	// Hotbar
-	SDL_Texture* hudbarTexture = SDL_CreateTextureFromSurface(renderer, player.hudbarTexture);
+	// SDL_Texture* hudbarTexture = SDL_CreateTextureFromSurface(renderer, player.hudbarTexture);
+	// SDL_RenderCopy(renderer, hudbarTexture, NULL, &hudRect);
+	// SDL_DestroyTexture(hudbarTexture);
 	SDL_Rect hudRect = {0, view.h + 1, view.w, 24};
-	SDL_RenderCopy(renderer, hudbarTexture, NULL, &hudRect);
-	SDL_DestroyTexture(hudbarTexture);
+	SDL_BlitSurface(player.hudbarTexture, NULL, screen, &hudRect);
 
 	// Inventory Items
 	for (int i = 0; i < SLOTS; i++) {
 		if (player.inventory[i].type > ITEM_NONE) {
+			// SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, player.inventory[i].itemTexture);
+			// SDL_RenderCopy(renderer, itemTexture, NULL, &rect);
+			// SDL_DestroyTexture(itemTexture);
 			SDL_Rect rect = {245 + i * 19, view.h + 5, 16, 16};
-			SDL_Texture* itemTexture = SDL_CreateTextureFromSurface(renderer, player.inventory[i].itemTexture);
-			SDL_RenderCopy(renderer, itemTexture, NULL, &rect);
-			SDL_DestroyTexture(itemTexture);
+			SDL_BlitSurface(player.inventory[i].itemTexture, NULL, screen, &rect);
 		}
 	}
 	if (player.choosing) { // Selection Icon
+		// SDL_Texture* selectTexture = SDL_CreateTextureFromSurface(renderer, player.selectTexture);
+		// SDL_RenderCopy(renderer, selectTexture, NULL, &rect);
+		// SDL_DestroyTexture(selectTexture);
 		SDL_Rect rect = {243 + player.select * 19, view.h + 3, player.selectTexture->w, player.selectTexture->h};
-		SDL_Texture* selectTexture = SDL_CreateTextureFromSurface(renderer, player.selectTexture);
-		SDL_RenderCopy(renderer, selectTexture, NULL, &rect);
-		SDL_DestroyTexture(selectTexture);
+		SDL_BlitSurface(player.selectTexture, NULL, screen, &rect);
 	}
 }

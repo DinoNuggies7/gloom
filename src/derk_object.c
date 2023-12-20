@@ -13,9 +13,9 @@ void Derk_Object_UPDATE(Object* this, ...) {
 	va_list list;
 	va_start(list, this);
 	double dt = va_arg(list, double);
+	SDL_Rect view = va_arg(list, SDL_Rect);
 	Player* player = va_arg(list, Player*);
 	Map map = va_arg(list, Map);
-	SDL_Rect view = va_arg(list, SDL_Rect);
 
 	// dir vector is straight line towards the player
 	this->dir.x = player->pos.x - this->pos.x;
@@ -43,21 +43,7 @@ void Derk_Object_UPDATE(Object* this, ...) {
 			this->vel.y = 0;
 	}
 
-	// Go around walls
-	// if (this->vel.x == 0) {
-	// 	if (this->vel.y > 0)
-	// 		this->vel.x = -this->vel.y;
-	// 	else
-	// 		this->vel.x = this->vel.y;
-	// 	this->vel.y = 0;
-	// }
-	// if (this->vel.y == 0) {
-	// 	if (this->vel.x > 0)
-	// 		this->vel.y = -this->vel.x;
-	// 	else
-	// 		this->vel.y = this->vel.x;
-	// 	this->vel.x = 0;
-	// }
+	// In the future go around walls here
 
 	// Quit game when player is gotted (should be jumpscare later)
 	if (this->pos.x + this->hitbox > player->pos.x - player->hitbox

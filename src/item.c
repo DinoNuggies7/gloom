@@ -18,7 +18,6 @@ Item CreateItem(int type) {
 
 // Global Item Init
 void ItemGlobalINIT(Item* this) {
-	printf("Created Item\n");
 	this->type = ITEM_NONE;
 	this->isGun = this->isFiring = false;
 	this->ammo = this->range = this->rounds = 0;

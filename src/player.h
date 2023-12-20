@@ -22,7 +22,7 @@ typedef struct {
 	Item inventory[SLOTS];
 	int scroll;
 	bool forward, backword, left, right, sprint, tired, lookup, lookdown, lookleft, lookright, leftclick, rightclick, choosing;
-	float walkSpeed, runSpeed, stamina, maxStamina, friction, maxSpeed, minSpeed, hitbox, xrel, lookspeed, sensitivity, selectTimer;
+	float walkSpeed, runSpeed, stamina, maxStamina, hitbox, xrel, lookspeed, sensitivity, selectTimer;
 	Vec2F pos, vel, dir, plane;
 	SDL_Surface* hudbarTexture;
 	SDL_Surface* selectTexture;

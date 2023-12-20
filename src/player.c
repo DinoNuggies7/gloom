@@ -62,13 +62,10 @@ void load(Player* this, FILE* file) {
 
 void Player__INIT(Player* this) {
 	this->quit = false;
-	this->walkSpeed = 2.5;
-	this->runSpeed = 1;
+	this->walkSpeed = 2;
+	this->runSpeed = 3;
 	this->maxStamina = 5;
 	this->stamina = this->maxStamina;
-	this->friction = 1;
-	this->minSpeed = 1;
-	this->maxSpeed = this->walkSpeed;
 	this->hitbox = 0.3;
 	this->select = 0;
 	this->selectTimer = 0;
@@ -168,49 +165,31 @@ void movement(Player* this, float dt) {
 		this->tired = true;
 	}
 
-	// Applying friction to velocity
-	if (this->vel.x < -this->minSpeed)
-		this->vel.x += this->friction;
-	else if (this->vel.x > this->minSpeed)
-		this->vel.x -= this->friction;
-	else
-		this->vel.x = 0;
+	Vec2F walkDir = {0, 0};
+	float speed;
+	if (this->sprint && !this->tired) speed = this->runSpeed; else speed = this->walkSpeed;
 
-	if (this->vel.y < -this->minSpeed)
-		this->vel.y += this->friction;
-	else if (this->vel.y > this->minSpeed)
-		this->vel.y -= this->friction;
-	else
-		this->vel.y = 0;
-
-	// Accelerate when pressing the movement keys
 	if (this->forward) {
-		this->vel.x += this->dir.x * this->walkSpeed;
-		this->vel.y += this->dir.y * this->walkSpeed;
+		walkDir.x += this->dir.x;
+		walkDir.y += this->dir.y;
 	}
-	else if (this->backword) {
-		this->vel.x -= this->dir.x * this->walkSpeed;
-		this->vel.y -= this->dir.y * this->walkSpeed;
+	if (this->backword) {
+		walkDir.x -= this->dir.x;
+		walkDir.y -= this->dir.y;
 	}
 	if (this->left) {
-		this->vel.x += this->dir.y * this->walkSpeed;
-		this->vel.y -= this->dir.x * this->walkSpeed;
+		walkDir.x += this->dir.y;
+		walkDir.y -= this->dir.x;
 	}
-	else if (this->right) {
-		this->vel.x -= this->dir.y * this->walkSpeed;
-		this->vel.y += this->dir.x * this->walkSpeed;
+	if (this->right) {
+		walkDir.x -= this->dir.y;
+		walkDir.y += this->dir.x;
 	}
 
-	// Keeping velocity under maximum
-	if (this->vel.x > this->maxSpeed + (this->sprint && !this->tired ? this->runSpeed : 0))
-		this->vel.x = this->maxSpeed + (this->sprint && !this->tired ? this->runSpeed : 0);
-	if (this->vel.x < -this->maxSpeed - (this->sprint && !this->tired ? this->runSpeed : 0))
-		this->vel.x = -this->maxSpeed - (this->sprint && !this->tired ? this->runSpeed : 0);
+	walkDir = NormalizeVec2F(walkDir);
 
-	if (this->vel.y > this->maxSpeed + (this->sprint && !this->tired ? this->runSpeed : 0))
-		this->vel.y = this->maxSpeed + (this->sprint && !this->tired ? this->runSpeed : 0);
-	if (this->vel.y < -this->maxSpeed - (this->sprint && !this->tired ? this->runSpeed : 0))
-		this->vel.y = -this->maxSpeed - (this->sprint && !this->tired ? this->runSpeed : 0);
+	this->vel.x = walkDir.x * speed;
+	this->vel.y = walkDir.y * speed;
 }
 
 void collision(Player* this, Map map, float dt) {

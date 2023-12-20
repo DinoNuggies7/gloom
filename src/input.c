@@ -2,7 +2,7 @@
 
 void handleInput(SDL_Event* event, Player* player) {
 	while (SDL_PollEvent(event)) {
-		if (event->type == SDL_WINDOWEVENT_CLOSE)
+		if (event->type == SDL_QUIT || event->type == SDL_WINDOWEVENT_CLOSE)
 			player->quit = true;
 
 		if (event->type == SDL_MOUSEMOTION)

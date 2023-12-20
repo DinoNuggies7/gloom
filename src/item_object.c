@@ -20,7 +20,10 @@ void Item_Object_INIT(Object* this, ...) {
 void Item_Object_UPDATE(Object* this, ...) {
 	va_list list;
 	va_start(list, this);
+	double dt = va_arg(list, double);
+	SDL_Rect view = va_arg(list, SDL_Rect);
 	Player* player = va_arg(list, Player*);
+	Map map = va_arg(list, Map);
 
 	// Collect item when player collides
 	if (this->pos.x + this->hitbox > player->pos.x - player->hitbox

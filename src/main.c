@@ -7,7 +7,6 @@
 SDL_Window* window;
 SDL_Surface* windowSurface;
 SDL_Surface* screen;
-// SDL_Renderer* renderer;
 
 int main(int argc, char** argv) {
 	SDL_Init(SDL_INIT_EVERYTHING);

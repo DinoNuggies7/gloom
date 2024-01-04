@@ -1,7 +1,7 @@
 # Define the compiler and compilation flags
 CCACHE = ccache
 CFLAGS = -g
-LIBS = -lm -lSDL2 -lSDL2_image
+LIBS = -lm -lSDL2 -lSDL2_image -lSDL2_mixer
 
 # Directories
 SRC_DIR = src

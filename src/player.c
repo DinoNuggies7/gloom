@@ -1,71 +1,14 @@
 #include "player.h"
 
-void save(Player* this) {
-	cJSON* json = cJSON_CreateObject();
-	cJSON_AddStringToObject(json, "map", this->map);
-	cJSON_AddNumberToObject(json, "sensitivity", this->sensitivity);
-	cJSON_AddNumberToObject(json, "equipL", this->equip[LEFT]);
-	cJSON_AddNumberToObject(json, "equipR", this->equip[RIGHT]);
-	for (int i = 0; i < SLOTS; i++) { // Inventory
-		char buffer[5];
-		snprintf(buffer, 5, "inv%d", i);
-		cJSON_AddNumberToObject(json, buffer, this->inventory[i].type);
-	}
-	char* json_str = cJSON_Print(json);
-	FILE* file = fopen(CONFIG_PATH, "w");
-	fputs(json_str, file);
-	fclose(file);
-	cJSON_free(json_str);
-	cJSON_Delete(json);
-	printf("saved game\n");
-}
-
-void load(Player* this, FILE* file) {
-	char buffer[1024];
-	int len = fread(buffer, 1, sizeof(buffer), file);
-	cJSON* json = cJSON_Parse(buffer);
-
-	// Map
-	cJSON* map = cJSON_GetObjectItemCaseSensitive(json, "map");
-	if (cJSON_IsString(map)) {
-		this->map = (char*)malloc(strlen(map->valuestring));
-		strcpy(this->map, map->valuestring);
-	}
-
-	// Sensitivity
-	cJSON* sensitivity = cJSON_GetObjectItemCaseSensitive(json, "sensitivity");
-	if (cJSON_IsNumber(sensitivity))
-		this->sensitivity = sensitivity->valuedouble;
-
-	// Equip
-	cJSON* equipL = cJSON_GetObjectItemCaseSensitive(json, "equipL");
-	if (cJSON_IsNumber(equipL))
-		this->equip[LEFT] = equipL->valueint;
-	cJSON* equipR = cJSON_GetObjectItemCaseSensitive(json, "equipR");
-	if (cJSON_IsNumber(equipR))
-		this->equip[RIGHT] = equipR->valueint;
-
-	// Inventory
-	cJSON* inv[SLOTS];
-	for (int i = 0; i < SLOTS; i++) {
-		char buffer[5];
-		snprintf(buffer, 5, "inv%d", i);
-		inv[i] = cJSON_GetObjectItemCaseSensitive(json, buffer);
-		if (cJSON_IsNumber(inv[i]))
-			this->inventory[i] = CreateItem(inv[i]->valueint);
-	}
-
-	fclose(file);
-	cJSON_Delete(json);
-	printf("loaded game\n");
-}
-
 void Player__INIT(Player* this) {
 	this->quit = false;
+	this->jumpscare = 0;
+	this->finish = false;
 	this->walkSpeed = 2;
 	this->runSpeed = 3;
 	this->maxStamina = 5;
 	this->stamina = this->maxStamina;
+	this->collided.x = this->collided.y = false;
 	this->hitbox = 0.3;
 	this->select = 0;
 	this->selectTimer = 0;
@@ -128,12 +71,12 @@ void camera(Player* this, float dt) {
 		rotSpeed.x = -this->lookspeed * dt;
 	else if (this->lookright)
 		rotSpeed.x = this->lookspeed * dt;
-	else if (this->xrel != 0)
-		rotSpeed.x = (this->lookspeed * (this->xrel * this->sensitivity)) * dt;
 	if (this->lookup)
 		rotSpeed.y = -this->lookspeed * dt;
-	else if (this->lookdown)		
+	else if (this->lookdown)
 		rotSpeed.y = this->lookspeed * dt;
+	if (this->xrel != 0)
+		rotSpeed.x = (this->lookspeed * (this->xrel * this->sensitivity)) * dt;
 
 	// Move camera
 	Vec2F oldDir = this->dir;
@@ -187,27 +130,50 @@ void movement(Player* this, float dt) {
 	}
 
 	walkDir = NormalizeVec2F(walkDir);
-
+	
 	this->vel.x = walkDir.x * speed;
 	this->vel.y = walkDir.y * speed;
 }
 
 void collision(Player* this, Map map, float dt) {
+	// where the player WILL be, both sides of each 4 corners away from the player (hitbox)
+	this->collisionBox[0].x = (this->pos.x - this->hitbox) + this->vel.x * dt;
+	this->collisionBox[0].y = this->pos.y - this->hitbox;
+	this->collisionBox[1].x = (this->pos.x - this->hitbox) + this->vel.x * dt;
+	this->collisionBox[1].y = this->pos.y + this->hitbox;
+	this->collisionBox[2].x = (this->pos.x + this->hitbox) + this->vel.x * dt;
+	this->collisionBox[2].y = this->pos.y - this->hitbox;
+	this->collisionBox[3].x = (this->pos.x + this->hitbox) + this->vel.x * dt;
+	this->collisionBox[3].y = this->pos.y + this->hitbox;
+	this->collisionBox[4].x = this->pos.x - this->hitbox;
+	this->collisionBox[4].y = (this->pos.y - this->hitbox) + this->vel.y * dt;
+	this->collisionBox[5].x = this->pos.x - this->hitbox;
+	this->collisionBox[5].y = (this->pos.y + this->hitbox) + this->vel.y * dt;
+	this->collisionBox[6].x = this->pos.x + this->hitbox;
+	this->collisionBox[6].y = (this->pos.y - this->hitbox) + this->vel.y * dt;
+	this->collisionBox[7].x = this->pos.x + this->hitbox;
+	this->collisionBox[7].y = (this->pos.y + this->hitbox) + this->vel.y * dt;
+
 	// Wall Collision
-	Vec2I tile[4];
-	tile[0].x = getTile(map, (this->pos.x - this->hitbox) + this->vel.x * dt, this->pos.y - this->hitbox);
-	tile[1].x = getTile(map, (this->pos.x - this->hitbox) + this->vel.x * dt, this->pos.y + this->hitbox);
-	tile[2].x = getTile(map, (this->pos.x + this->hitbox) + this->vel.x * dt, this->pos.y - this->hitbox);
-	tile[3].x = getTile(map, (this->pos.x + this->hitbox) + this->vel.x * dt, this->pos.y + this->hitbox);
-	tile[0].y = getTile(map, this->pos.x - this->hitbox, (this->pos.y - this->hitbox) + this->vel.y * dt);
-	tile[1].y = getTile(map, this->pos.x - this->hitbox, (this->pos.y + this->hitbox) + this->vel.y * dt);
-	tile[2].y = getTile(map, this->pos.x + this->hitbox, (this->pos.y - this->hitbox) + this->vel.y * dt);
-	tile[3].y = getTile(map, this->pos.x + this->hitbox, (this->pos.y + this->hitbox) + this->vel.y * dt);
 	for (int i = 0; i < 4; i++) {
-		if (tile[i].x > TILE_COLLISION_START && tile[i].x < TILE_COLLISION_END)
+		Vec2I tile = {getTile(map, this->collisionBox[i].x, this->collisionBox[i].y), getTile(map, this->collisionBox[i+4].x, this->collisionBox[i+4].y)};
+		if (tile.x > TILE__COLLISION_OBJECT)
 			this->vel.x = 0;
-		if (tile[i].y > TILE_COLLISION_START && tile[i].y < TILE_COLLISION_END)
+		if (tile.y > TILE__COLLISION_OBJECT)
 			this->vel.y = 0;
+	}
+
+	// Object Collision
+	if (this->collided.x)
+		this->vel.x = 0;
+	if (this->collided.y)
+		this->vel.y = 0;
+	this->collided.x = this->collided.y = false;
+	
+	// End of Level Collision
+	if (getTile(map, this->pos.x, this->pos.y) == TILE_DOOR) {
+		this->finish = true;
+		printf("You beat the game les go\n");
 	}
 }
 
@@ -275,4 +241,64 @@ void handleItems(Player* this, Map* map, float dt) {
 		this->choosing = false;
 		this->selectTimer = 0;
 	}
+}
+
+void save(Player* this) {
+	cJSON* json = cJSON_CreateObject();
+	cJSON_AddStringToObject(json, "map", this->map);
+	cJSON_AddNumberToObject(json, "sensitivity", this->sensitivity);
+	cJSON_AddNumberToObject(json, "equipL", this->equip[LEFT]);
+	cJSON_AddNumberToObject(json, "equipR", this->equip[RIGHT]);
+	for (int i = 0; i < SLOTS; i++) { // Inventory
+		char buffer[5];
+		snprintf(buffer, 5, "inv%d", i);
+		cJSON_AddNumberToObject(json, buffer, this->inventory[i].type);
+	}
+	char* json_str = cJSON_Print(json);
+	FILE* file = fopen(CONFIG_PATH, "w");
+	fputs(json_str, file);
+	fclose(file);
+	cJSON_free(json_str);
+	cJSON_Delete(json);
+	printf("saved game\n");
+}
+
+void load(Player* this, FILE* file) {
+	char buffer[1024];
+	int len = fread(buffer, 1, sizeof(buffer), file);
+	cJSON* json = cJSON_Parse(buffer);
+
+	// Map
+	cJSON* map = cJSON_GetObjectItemCaseSensitive(json, "map");
+	if (cJSON_IsString(map)) {
+		this->map = (char*)malloc(strlen(map->valuestring));
+		strcpy(this->map, map->valuestring);
+	}
+
+	// Sensitivity
+	cJSON* sensitivity = cJSON_GetObjectItemCaseSensitive(json, "sensitivity");
+	if (cJSON_IsNumber(sensitivity))
+		this->sensitivity = sensitivity->valuedouble;
+
+	// Equip
+	cJSON* equipL = cJSON_GetObjectItemCaseSensitive(json, "equipL");
+	if (cJSON_IsNumber(equipL))
+		this->equip[LEFT] = equipL->valueint;
+	cJSON* equipR = cJSON_GetObjectItemCaseSensitive(json, "equipR");
+	if (cJSON_IsNumber(equipR))
+		this->equip[RIGHT] = equipR->valueint;
+
+	// Inventory
+	cJSON* inv[SLOTS];
+	for (int i = 0; i < SLOTS; i++) {
+		char buffer[5];
+		snprintf(buffer, 5, "inv%d", i);
+		inv[i] = cJSON_GetObjectItemCaseSensitive(json, buffer);
+		if (cJSON_IsNumber(inv[i]))
+			this->inventory[i] = CreateItem(inv[i]->valueint);
+	}
+
+	fclose(file);
+	cJSON_Delete(json);
+	printf("loaded game\n");
 }

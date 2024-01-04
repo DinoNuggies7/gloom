@@ -6,7 +6,6 @@
 #include "item.h"
 #include "map.h"
 
-#include <stdbool.h>
 #include <string.h>
 #include <math.h>
 
@@ -18,19 +17,21 @@
 typedef struct {
 	bool quit;
 	char* map;
-	int equip[2], select;
+	int equip[2], select, scroll, jumpscare;
 	Item inventory[SLOTS];
-	int scroll;
-	bool forward, backword, left, right, sprint, tired, lookup, lookdown, lookleft, lookright, leftclick, rightclick, choosing;
+	bool sprint, tired, choosing, finish;
+	bool forward, backword, left, right, lookup, lookdown, lookleft, lookright, leftclick, rightclick;
 	float walkSpeed, runSpeed, stamina, maxStamina, hitbox, xrel, lookspeed, sensitivity, selectTimer;
 	Vec2F pos, vel, dir, plane;
+	Vec2F collisionBox[8]; Vec2B collided;
 	SDL_Surface* hudbarTexture;
 	SDL_Surface* selectTexture;
 } Player;
 
-void save(Player* player);
-
 void Player__INIT(Player* player);
 void Player__UPDATE(Player* player, Map* map, float dt);
+
+void save(Player* player);
+void load(Player* this, FILE* file);
 
 #endif

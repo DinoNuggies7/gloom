@@ -3,7 +3,6 @@
 
 #define WIELD_SCALE 2
 #define SHADE_STRENGTH 20
-#define VIEW_DISTANCE 256 / SHADE_STRENGTH
 
 #include "vector.h"
 #include "object.h"

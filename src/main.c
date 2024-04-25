@@ -9,7 +9,7 @@ SDL_Window* window;
 SDL_Surface* screen;
 SDL_Renderer* renderer;
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
 	// Initialize SDL2
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_PNG);
@@ -186,6 +186,6 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-int WinMain(int argc, char** argv) {
+int WinMain(int argc, char* argv[]) {
 	return main(argc, argv);
 }

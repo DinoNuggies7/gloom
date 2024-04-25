@@ -44,9 +44,9 @@ void Player__INIT(Player* this) {
 		load(this, file);
 }
 
-void camera(Player* player, float dt);
-void movement(Player* player, float dt);
-void collision(Player* player, Map map, float dt);
+void camera(Player* this, float dt);
+void movement(Player* this, float dt);
+void collision(Player* this, Map map, float dt);
 void handleItems(Player* this, Map* map, float dt);
 
 void Player__UPDATE(Player* this, Map* map, float dt) {
@@ -265,7 +265,7 @@ void save(Player* this) {
 
 void load(Player* this, FILE* file) {
 	char buffer[1024];
-	int len = fread(buffer, 1, sizeof(buffer), file);
+	fread(buffer, 1, sizeof(buffer), file);
 	cJSON* json = cJSON_Parse(buffer);
 
 	// Map

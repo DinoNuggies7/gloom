@@ -69,6 +69,8 @@ void handleInput(SDL_Event* event, Player* player) {
 				case SDL_SCANCODE_RIGHT:
 					player->lookright = true;
 					break;
+				default:
+					break;
 			}
 		}
 		else if (event->type == SDL_KEYUP) {
@@ -99,6 +101,8 @@ void handleInput(SDL_Event* event, Player* player) {
 					break;
 				case SDL_SCANCODE_RIGHT:
 					player->lookright = false;
+					break;
+				default:
 					break;
 			}
 		}

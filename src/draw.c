@@ -1,5 +1,7 @@
 #include "draw.h"
 
+const int VIEW_DISTANCE = 256 / SHADE_STRENGTH;
+
 float dist2Object(Player player, Object object) {
 	return sqrt(powf(player.pos.x - object.pos.x, 2.f) + powf(player.pos.y - object.pos.y, 2.f));
 }
@@ -180,7 +182,7 @@ void drawForeground(SDL_Surface* screen, SDL_Surface** texture, SDL_Rect view, P
 	int drawOrder[objects];
 	for (int i = 0; i < objects; i++)
 		drawOrder[i] = i;
-	bool done;
+	bool done = false;
 	while (!done) {
 		done = true;
 		for (int i = 0; i < objects - 1; i++) {
@@ -371,7 +373,6 @@ void drawForeground(SDL_Surface* screen, SDL_Surface** texture, SDL_Rect view, P
 
 		// Draw
 		int shadeStrength = perpWallDist * SHADE_STRENGTH;
-		float invDet = 1 / (player.plane.x * player.dir.y - player.dir.x * player.plane.y);
 		if (perpWallDist < VIEW_DISTANCE) {
 			for (int i = drawStart; i < drawEnd; i++) {
 				bool draw = true;

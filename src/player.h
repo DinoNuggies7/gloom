@@ -9,7 +9,7 @@
 #include <string.h>
 #include <math.h>
 
-#define CONFIG_PATH "config.json"
+#define CONFIG_PATH "settings.json"
 #define LEFT  0
 #define RIGHT 1
 #define SLOTS 8
@@ -32,6 +32,6 @@ void Player__INIT(Player* player);
 void Player__UPDATE(Player* player, Map* map, float dt);
 
 void save(Player* player);
-void load(Player* this, FILE* file);
+void load(Player* player, FILE* file);
 
 #endif

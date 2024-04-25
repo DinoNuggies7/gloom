@@ -6,7 +6,7 @@ void parseMap(Map* map, const char* mapFile) {
 	char ch;
 	char buffer[2];
 	int i = 0;
-	bool done;
+	bool done = false;
 	while (!done) { // Find the size of the map
 		ch = fgetc(file);
 		switch (ch) {

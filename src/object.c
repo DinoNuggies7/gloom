@@ -88,31 +88,31 @@ void ObjectGlobalUPDATE(Object* this, float dt, Object* object, int objects, Pla
 
 	// take damage when shot
 	if (this->hurtable) {
-		for (int i = 0; i < SLOTS; i++) {
-			if (player->inventory[i].isGun) {
-				if (player->inventory[i].isFiring) {
-					for (float j = 0; true; j += 0.001) {
-						Vec2F dir = player->dir;
+		// for (int i = 0; i < SLOTS; i++) {
+		// 	if (player->inventory[i].isGun) {
+		// 		if (player->inventory[i].isFiring) {
+		// 			for (float j = 0; true; j += 0.001) {
+		// 				Vec2F dir = player->dir;
 
-						float x = player->pos.x + player->dir.x * j;
-						float y = player->pos.y + player->dir.y * j;
-						int tile = getTile(map, x, y);
+		// 				float x = player->pos.x + player->dir.x * j;
+		// 				float y = player->pos.y + player->dir.y * j;
+		// 				int tile = getTile(map, x, y);
 
-						if (tile >= TILE__COLLISION_OBJECT) {
-							break;
-						}
+		// 				if (tile >= TILE__COLLISION_OBJECT) {
+		// 					break;
+		// 				}
 
-						if (x > this->pos.x - this->hitbox
-						&& x < this->pos.x + this->hitbox
-						&& y > this->pos.y - this->hitbox
-						&& y < this->pos.y + this->hitbox) {
-							this->hp -= player->inventory[i].damage;
-							break;
-						}
-					}
-				}
-			}
-		}
+		// 				if (x > this->pos.x - this->hitbox
+		// 				&& x < this->pos.x + this->hitbox
+		// 				&& y > this->pos.y - this->hitbox
+		// 				&& y < this->pos.y + this->hitbox) {
+		// 					this->hp -= player->inventory[i].damage;
+		// 					break;
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
 		// If no hp then die
 		if (this->hp <= 0 && this->type > OBJECT_NULL)
 			this->destroy = true;

@@ -4,7 +4,7 @@ void Chair_Object_INIT(Object* this, ...) {
 	this->solid = true;
 	this->hitbox = 0.3;
 	this->hp = this->maxHealth = 2;
-	this->texture = IMG_Load("res/object/table.png");
+	this->texture = IMG_Load("res/object/chair.png");
 }
 
 void Chair_Object_UPDATE(Object* this, ...) {

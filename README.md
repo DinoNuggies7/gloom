@@ -2,7 +2,7 @@
 A WIP DOOM and Backrooms inspired horror game
 
 # Building
-```fish
+```bash
 git clone https://github.com/DinoNuggies7/gloom.git
 cd gloom
 make

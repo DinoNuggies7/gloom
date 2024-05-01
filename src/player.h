@@ -14,7 +14,7 @@
 #define RIGHT 1
 #define SLOTS 8
 
-typedef struct {
+typedef struct Player {
 	bool quit;
 	char* map;
 	int equip[2], select, scroll, jumpscare;

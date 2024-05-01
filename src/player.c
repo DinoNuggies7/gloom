@@ -54,12 +54,11 @@ void Player__UPDATE(Player* this, Map* map, float dt) {
 	camera(this, dt);
 	movement(this, dt);
 	collision(this, *map, dt);
+	handleItems(this, map, dt);
 
 	// Applying Velocity
 	this->pos.x += this->vel.x * dt;
 	this->pos.y += this->vel.y * dt;
-
-	handleItems(this, map, dt);
 }
 
 void camera(Player* this, float dt) {
@@ -71,10 +70,6 @@ void camera(Player* this, float dt) {
 		rotSpeed.x = -this->lookspeed * dt;
 	else if (this->lookright)
 		rotSpeed.x = this->lookspeed * dt;
-	if (this->lookup)
-		rotSpeed.y = -this->lookspeed * dt;
-	else if (this->lookdown)
-		rotSpeed.y = this->lookspeed * dt;
 	if (this->xrel != 0)
 		rotSpeed.x = (this->lookspeed * (this->xrel * this->sensitivity)) * dt;
 

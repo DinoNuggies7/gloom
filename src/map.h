@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
+typedef struct Map {
 	int w, h;
 	int* tile;
 	Vec3I* spawn; int spawns;

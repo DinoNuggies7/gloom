@@ -54,7 +54,7 @@ void parseMap(Map* map, const char* mapFile) {
 				i++;
 				break;
 			case '%':
-				map->tile[i] = TILE_DOOR;
+				map->tile[i] = TILE_END;
 				i++;
 				break;
 			case '@':

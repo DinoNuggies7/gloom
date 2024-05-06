@@ -1,6 +1,6 @@
 # Define the compiler and compilation flags
 CCACHE = ccache
-CFLAGS = -Wall
+CFLAGS = -Wall -Ofast
 LIBS = -lm -lSDL2 -lSDL2_image -lSDL2_mixer
 
 # Directories

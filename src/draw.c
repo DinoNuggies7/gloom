@@ -361,7 +361,7 @@ void drawForeground(SDL_Surface* screen, SDL_Surface** texture, SDL_Rect view, P
 			case TILE_BACKROOM:
 				texNum = TEXTURE_BACKROOM;
 				break;
-			case TILE_DOOR:
+			case TILE_END:
 				texNum = TEXTURE_DOOR;
 				break;
 			default:
@@ -384,13 +384,13 @@ void drawForeground(SDL_Surface* screen, SDL_Surface** texture, SDL_Rect view, P
 				}
 				if (draw) {
 					if (texNum != -1) {
-						//calculate value of wallX
+						// calculate value of wallX
 						float wallX; //where exactly the wall was hit
 						if (side == 0) wallX = player.pos.y + perpWallDist * rayDir.y;
 						else           wallX = player.pos.x + perpWallDist * rayDir.x;
 						wallX -= floor((wallX));
 
-						//x coordinate on the texture
+						// x coordinate on the texture
 						int texX = wallX * texture[texNum]->w;
 						if(side == 0 && rayDir.x > 0) texX = texture[texNum]->w - texX - 1;
 						if(side == 1 && rayDir.y < 0) texX = texture[texNum]->w - texX - 1;

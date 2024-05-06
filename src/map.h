@@ -15,13 +15,13 @@ typedef struct Map {
 enum MapTile {
 	TILE_NONE,
 	TILE_SPAWN,
-	TILE_DOOR,
+	TILE_END,
 
 	TILE_GLITCHED,
 	TILE_BACKROOM,
 };
 #define TILE__COLLISION_PLAYER TILE_GLITCHED
-#define TILE__COLLISION_OBJECT TILE_DOOR
+#define TILE__COLLISION_OBJECT TILE_END
 
 void parseMap(Map* map, const char* mapFile);
 int getTile(Map map, int x, int y);

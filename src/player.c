@@ -31,7 +31,7 @@ void Player__INIT(Player* this) {
 		printf("couldn't find config file, creating one\n");
 
 		// Default values
-		this->map = "res/map/level0.txt";
+		this->map = "res/map/level1.txt";
 		this->sensitivity = 0.5;
 		this->equip[LEFT] = 0;
 		this->equip[RIGHT] = 1;
@@ -166,7 +166,7 @@ void collision(Player* this, Map map, float dt) {
 	this->collided.x = this->collided.y = false;
 	
 	// End of Level Collision
-	if (getTile(map, this->pos.x, this->pos.y) == TILE_DOOR) {
+	if (getTile(map, this->pos.x, this->pos.y) == TILE_END) {
 		this->finish = true;
 		printf("You beat the game les go\n");
 	}
